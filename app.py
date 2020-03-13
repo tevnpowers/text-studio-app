@@ -1,5 +1,5 @@
 from uuid import UUID
-from context import text_studio
+import text_studio
 from project import Project
 
 USER_PROMPT = "Please enter a command to run (q - quit, h - help): "
