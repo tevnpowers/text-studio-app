@@ -1,3 +1,4 @@
 nltk
 text-studio
 wordcloud
+zerorpc
