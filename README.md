@@ -14,6 +14,8 @@
 ### Desktop Application
 The *TextStudio* application provides a visual interface for users to inspect and visualize text data, as well as facilitates the building of text processing systems based on NLP techniques and statistical or machine learning models.
 
+The desktop application is implemented as an [Electron](https://www.electronjs.org/) app, with a Python backend.
+
 ### Software Development Kit (SDK) (coming soon)
 The software development kit is built upon the `text-studio` [Python package](https://pypi.org/project/text-studio) and enables users to write and publish plugins that can be used by users of the desktop application. View the source of the `text-studio` package [here](https://github.com/tevnpowers/text-studio).
 
