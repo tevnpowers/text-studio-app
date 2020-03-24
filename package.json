@@ -1,0 +1,24 @@
+{
+  "name": "text-studio-app",
+  "productName": "text-studio-app",
+  "version": "0.0.1-alpha",
+  "description": "Text Studio",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": {
+    "name": "Tev'n Powers",
+    "email": "tevnpowers@gmail.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "zerorpc": "^0.9.8"
+  },
+  "devDependencies": {
+    "electron": "3",
+    "electron-packager": "14.2.1",
+    "electron-rebuild": "^1.10.1"
+  }
+}
