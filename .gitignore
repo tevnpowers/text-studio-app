@@ -3,3 +3,7 @@ data
 node_modules
 package-lock.json
 notes.txt
+*npm-debug.log
+*.DS_Store
+dist/
+builds/

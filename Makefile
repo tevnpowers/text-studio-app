@@ -1,7 +1,15 @@
-build:
+activate:
+	conda activate app
+
+clean:
+	rm -rf node_modules
+
+install: pip-install npm-install rebuild
+
+pip-install:
 	pip install -r requirements.txt
 
-install:
+npm-install:
 	npm install
 
 code:
