@@ -4,9 +4,10 @@ import signal
 import zerorpc
 
 from api import TextStudioAPI
+print('HELLO WORLD!')
 
 if __name__ == '__main__':
-    port = 1234
+    port = 4242
     addr = 'tcp://127.0.0.1:' + str(port)
     s = zerorpc.Server(TextStudioAPI())
     s.bind(addr)

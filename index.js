@@ -34,7 +34,7 @@ let pyProc = null
 let pyPort = null
 
 const selectPort = () => {
-  pyPort = 4242
+  pyPort = 1234
   return pyPort
 }
 
