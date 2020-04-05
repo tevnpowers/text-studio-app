@@ -1,11 +1,16 @@
 'use strict';
 
 // Import parts of electron to use
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {
+  app,
+  BrowserWindow,
+  ipcMain
+} = require('electron');
 const path = require('path')
 const url = require('url')
-
+const { setMainMenu } = require('./utils/menu.js')
 const {
+  openProject,
   tokenizeText
 } = require('./renderer.js')
 
@@ -64,6 +69,7 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+  setMainMenu();
 }
 
 // Python local server

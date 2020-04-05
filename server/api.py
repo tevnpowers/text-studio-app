@@ -1,17 +1,11 @@
-from calculator.simple import SimpleCalculator
+from project import Project
 
 
 class TextStudioAPI(object):
-    def __init__(self):
-        self.calculator = SimpleCalculator()
-
-    def calc(self, text):
-        """based on the input text, return the int result"""
-        try:
-            self.calculator.run(text)
-            return self.calculator.lcd
-        except Exception as e:
-            return 0.0
+    def open_project(self, path):
+        print('API loading project {}!'.format(path))
+        project = Project(filepath=path)
+        return project.toJson()
 
     def tokenize(self, text):
         """split text on white space"""

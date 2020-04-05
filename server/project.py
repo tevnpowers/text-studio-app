@@ -10,22 +10,36 @@ from extensions.csv_loader import CsvLoader
 from text_studio.dataset import Dataset
 from text_studio.pipeline import Pipeline
 
-METADATA_KEYS = ["author", "created", "saved"]
+ID_KEYS = [
+    "data",
+    "loaders",
+    "annotators",
+    "actions",
+    "pipelines"
+]
 
 
-def get_current_time():
-    return datetime.now().isoformat(timespec="minutes")
+class UUIDEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, UUID):
+            # if the obj is uuid, we simply return the value of uuid
+            return obj.hex
+        return json.JSONEncoder.default(self, obj)
 
 
 class Project(object):
     def __init__(self, *, author="", filepath=""):
         self.filepath = filepath.strip()
-        self.metadata = {
-            "author": author.strip(),
-            "created": get_current_time(),
-            "saved": "",
+        self.project_info = {
+            "metadata": {
+                "author": author.strip(),
+                "created_time": get_current_time(),
+                "saved_time": "",
+            },
             "data": [],
+            "loaders": [],
             "annotators": [],
+            "actions": [],
             "pipelines": [],
         }
 
@@ -47,6 +61,11 @@ class Project(object):
 
         self.load_datasets()
 
+    def toJson(self):
+        json_project = {"path": self.filepath}
+        json_project.update(self.project_info)
+        return json.dumps(json_project, cls=UUIDEncoder)
+
     def get_project_component_descriptions(self, heading, collection):
         description = "\n{}:\n----------\n".format(heading)
         for id, component in collection.items():
@@ -55,9 +74,9 @@ class Project(object):
 
     def __repr__(self):
         description = "Author: {}\nCreated: {}\nSaved: {}\n".format(
-            self.metadata["author"],
-            self.metadata["created"],
-            self.metadata["saved"],
+            self.project_info["author"],
+            self.project_info["created_time"],
+            self.project_info["saved_timed"],
         )
 
         if self.data_loaders:
@@ -94,14 +113,9 @@ class Project(object):
         return ""
 
     def save(self, filepath):
-        self.metadata["saved"] = get_current_time()
+        self.project_info["saved"] = get_current_time()
 
     def parse_config(self, config):
-        if "metadata" in config:
-            for key in METADATA_KEYS:
-                if key in config["metadata"]:
-                    self.metadata[key] = config["metadata"][key]
-
         if "loaders" in config:
             for info in config["loaders"]:
                 self.add_data_loader(info)
@@ -121,6 +135,8 @@ class Project(object):
         if "pipelines" in config:
             for info in config["pipelines"]:
                 self.add_pipeline(info)
+
+        self.project_info = config.copy()
 
     def add_data_loader(self, info):
         if info["name"] == "CsvLoader":
@@ -253,3 +269,7 @@ class Project(object):
 
     def _get_absolute_path(self, path):
         return os.path.join(self.directory, path)
+
+
+def get_current_time():
+    return datetime.now().isoformat(timespec="minutes")
