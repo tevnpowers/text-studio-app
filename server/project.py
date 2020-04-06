@@ -215,6 +215,10 @@ class Project(object):
         for filename, dataset in self.datasets.items():
             dataset.load()
 
+    def load_dataset(self, dataset_id):
+        self.datasets[dataset_id].load()
+        return self.datasets[dataset_id].instances
+
     def run(self, id, input_data_id, output_data_path, verbose=False):
         instances = self.datasets[input_data_id].instances
         if id in self.annotators:
