@@ -25,8 +25,7 @@ async function openProject(path) {
     client.invoke("open_project", path, (error, res) => {
       if (error) {
         console.error(error)
-      }
-      else {
+      } else {
         project = res;
       }
       resolve(project);
@@ -35,7 +34,24 @@ async function openProject(path) {
   return await promise;
 }
 
+async function loadDataset(id) {
+  console.log("Loading dataset", id)
+  let promise = new Promise((resolve, reject) => {
+    let dataset = {}
+    client.invoke("load_dataset", id, (error, res) => {
+      if (error) {
+        console.error(error)
+      } else {
+        dataset = res;
+      }
+      resolve(dataset);
+    })
+  });
+  return await promise;
+}
+
 module.exports = {
   openProject,
-  tokenizeText
+  tokenizeText,
+  loadDataset
 }

@@ -11,12 +11,15 @@ const url = require('url')
 const { setMainMenu } = require('./utils/menu.js')
 const {
   openProject,
-  tokenizeText
+  tokenizeText,
+  loadDataset
 } = require('./renderer.js')
 
 const {
   SUBMIT_TEXT,
-  TOKENIZE_TEXT
+  TOKENIZE_TEXT,
+  LOAD_DATA,
+  ACCEPT_DATA
 } = require('./utils/constants.js')
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -134,3 +137,11 @@ ipcMain.on(SUBMIT_TEXT, (event, arg) => {
     }
   );
 })
+
+ipcMain.on(LOAD_DATA, (event, arg) => {
+    console.log("here 001 ", arg)
+    loadDataset(arg).then(response => {
+        event.sender.send(ACCEPT_DATA, response)
+      }
+    );
+  })
