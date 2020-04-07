@@ -1,13 +1,10 @@
 import React from 'react';
 import TextForm from './Form';
+import DatasetEditor from './DatasetEditor';
 import './index.css';
 
 const { ipcRenderer } = require('electron');
-const {
-  OPEN_PROJECT,
-  LOAD_DATA,
-  ACCEPT_DATA
-} = require('../../utils/constants.js')
+const { OPEN_PROJECT } = require('../../utils/constants.js')
 
 
 class Panel extends React.Component {
@@ -48,70 +45,6 @@ class Panel extends React.Component {
         );
     }
 }
-
-class DatasetEditor extends React.Component {
-    constructor(props) {
-        super(props)
-        this.loadingData = false
-        this.state = {
-            maxHeight: null,
-            isLoaded: false,
-            data: []
-        }
-        this.updateDimensions = this.updateDimensions.bind(this);
-    }
-
-    componentDidMount() {
-        this.updateDimensions();
-    }
-
-    updateDimensions() {
-        this.setState({
-            maxHeight: document.body.scrollHeight
-        })
-    }
-
-    render() {
-        const divStyle = {
-            maxHeight: (this.props.isExpanded ? this.state.maxHeight : 0) + "px",
-        };
-
-        if (!this.state.isLoaded && !this.loadingData) {
-            this.loadingData = true
-            console.log("loading data for ", this.props.id)
-            this.loadData()
-        }
-
-        let rows = []
-        for (let index in this.state.data) {
-            let row = ""
-            for (let key in this.state.data[index]) {
-                row = row.concat(key + ": " + this.state.data[index][key] + " ")
-            }
-            rows.push(<p key={index}>{row}</p>)
-        }
-
-        return (
-            <div className="panel" style={divStyle}>
-                {rows}
-            </div>
-        );
-    }
-
-    loadData() {
-        console.log("sending data!")
-        ipcRenderer.send(LOAD_DATA, this.props.id);
-
-        ipcRenderer.once(ACCEPT_DATA, (event, arg) => {
-            console.log("got data back!", arg)
-            console.log(arg)
-            this.setState({
-                data: arg
-            });
-        });
-    }
-}
-
 
 class ProjectNode extends React.Component {
     constructor(props) {
