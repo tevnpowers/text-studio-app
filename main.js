@@ -1,5 +1,4 @@
 'use strict';
-
 // Import parts of electron to use
 const {
   app,
@@ -10,16 +9,18 @@ const path = require('path')
 const url = require('url')
 const { setMainMenu } = require('./utils/menu.js')
 const {
-  openProject,
   tokenizeText,
-  loadDataset
+  loadDataset,
+  loadDatasetMock
 } = require('./renderer.js')
 
 const {
   SUBMIT_TEXT,
   TOKENIZE_TEXT,
   LOAD_DATA,
-  ACCEPT_DATA
+  ACCEPT_DATA,
+  GET_DATASET,
+  RETURN_DATASET
 } = require('./utils/constants.js')
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -133,15 +134,21 @@ app.on('activate', () => {
 ipcMain.on(SUBMIT_TEXT, (event, arg) => {
   console.log("here 001 ", arg)
   tokenizeText(arg).then(response => {
-      event.sender.send(TOKENIZE_TEXT, response)
-    }
+    event.sender.send(TOKENIZE_TEXT, response)
+  }
   );
 })
 
 ipcMain.on(LOAD_DATA, (event, arg) => {
-    console.log("here 001 ", arg)
-    loadDataset(arg).then(response => {
-        event.sender.send(ACCEPT_DATA, response)
-      }
-    );
-  })
+  console.log("here 001 ", arg)
+  loadDataset(arg).then(response => {
+    event.sender.send(ACCEPT_DATA, response)
+  });
+})
+
+ipcMain.on(GET_DATASET, (event, arg) => {
+  console.log("dataset 001 ", arg)
+  loadDatasetMock(arg).then(response => {
+    event.sender.send(RETURN_DATASET, response)
+  });
+})
