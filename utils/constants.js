@@ -3,5 +3,7 @@ module.exports = {
     TOKENIZE_TEXT: 'tokenize-text',
     OPEN_PROJECT: 'open-project',
     LOAD_DATA: 'load-data',
-    ACCEPT_DATA: 'accept-data'
+    ACCEPT_DATA: 'accept-data',
+    GET_DATASET: 'get-dataset',
+    RETURN_DATASET: 'return-dataset'
 }
