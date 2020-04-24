@@ -19,6 +19,19 @@ class TextStudioAPI(object):
         instances = project.load_dataset(id)
         return instances
 
+    def load_dataset_from_file(self, path):
+        pass
+
+    def load_dataset_mock(self, id_string):
+        instances = [
+            {"id": 0, "name": "Tev'n", "age": 28, "graduated": True},
+            {"id": 1, "name": "Charlie", "age": 28, "graduated": False},
+            {"id": 2, "name": "Jan", "age": 27, "graduated": False},
+            {"id": 3, "name": "Amy", "age": 35, "graduated": True},
+            {"id": 4, "name": "Mike", "age": 19, "graduated": False},
+        ]
+        return instances
+
     def tokenize(self, text):
         """split text on white space"""
         return text.split()

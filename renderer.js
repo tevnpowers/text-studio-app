@@ -50,8 +50,41 @@ async function loadDataset(id) {
   return await promise;
 }
 
+async function loadDatasetFromFile(id) {
+  console.log("Loading dataset", id)
+  let promise = new Promise((resolve, reject) => {
+    let dataset = {}
+    client.invoke("load_dataset_from_file", id, (error, res) => {
+      if (error) {
+        console.error(error)
+      } else {
+        dataset = res;
+      }
+      resolve(dataset);
+    })
+  });
+  return await promise;
+}
+
+async function loadDatasetMock(id) {
+  console.log("Loading dataset", id)
+  let promise = new Promise((resolve, reject) => {
+    let dataset = {}
+    client.invoke("load_dataset_mock", id, (error, res) => {
+      if (error) {
+        console.error(error)
+      } else {
+        dataset = res;
+      }
+      resolve(dataset);
+    })
+  });
+  return await promise;
+}
+
 module.exports = {
   openProject,
   tokenizeText,
-  loadDataset
+  loadDataset,
+  loadDatasetMock
 }
