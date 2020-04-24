@@ -1,6 +1,6 @@
 const { BrowserWindow, dialog, Menu } = require('electron')
 const { openProject, tokenizeText } = require('../renderer.js')
-const { OPEN_PROJECT } = require('../utils/constants.js')
+const { OPEN_PROJECT, RETURN_DATASET } = require('../utils/constants.js')
 
 // Menu
 function setMainMenu() {
@@ -33,7 +33,10 @@ function setMainMenu() {
           accelerator: 'CmdOrCtrl+O',
           click: openProjectFromMenu
         },
-        { label: 'Open Dataset' },
+        {
+          label: 'Open Dataset',
+          click: openDatasetFromMenu
+        },
         { type: 'separator' },
         { label: 'Save' },
         { type: 'separator' },
@@ -130,12 +133,32 @@ function openProjectFromMenu(event, focusedWindow, focusedWebContents) {
   if (path !== undefined && path.length == 1) {
     path = path[0]
     openProject(path).then(response => {
-        let window = BrowserWindow.getFocusedWindow()
-        window.webContents.send(OPEN_PROJECT, response);
+      let window = BrowserWindow.getFocusedWindow()
+      window.webContents.send(OPEN_PROJECT, response);
+    });
+  }
+}
+
+function openDatasetFromMenu(event, focusedWindow, focusedWebContents) {
+  // TO DO: redirect to dataset view
+  let path = dialog.showOpenDialog({
+    title: 'Open Dataset',
+    filters: [
+      {name: 'csv', extensions: ['csv']},
+      {name: 'tsv', extensions: ['tsv']}
+    ],
+    properties: ['openFile']
+  })
+
+  if (path !== undefined && path.length == 1) {
+    path = path[0]
+    openProject(path).then(response => {
+      let window = BrowserWindow.getFocusedWindow()
+      window.webContents.send(RETURN_DATASET, response);
     });
   }
 }
 
 module.exports = {
-    setMainMenu
+  setMainMenu
 }
