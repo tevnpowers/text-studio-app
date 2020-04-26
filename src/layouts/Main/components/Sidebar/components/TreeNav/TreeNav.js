@@ -7,37 +7,78 @@ import { StyledTreeItem } from './components';
 
 const useStyles = makeStyles({
   root: {
-    height: '100%',
-    flexGrow: 1,
     maxWidth: 200,
     marginLeft: 10,
-    marginBottom: 0,
   },
 });
 
-export default function TreeNav() {
+const projects = [
+  { 
+    title: 'Demo Project',
+    unsavedItems: 1,
+    id: '1',
+    href: '/projects',
+  },
+  {
+    title: 'Exploratory Data Analysis',
+    unsavedItems: 4,
+    id: '2',
+    href: '/projects',
+  },
+  {
+    title: 'Thesis',
+    unsavedItems: 0,
+    id: '3',
+    href: '/projects',
+  }
+]
+
+const datasets = [
+  { 
+    title: 'Student Dataset',
+    unsavedItems: 0,
+    id: '1',
+    href: '/projects',
+  },
+  {
+    title: 'Fanfiction Stories (Clean)',
+    unsavedItems: 0,
+    id: '2',
+    href: '/projects',
+  },
+  {
+    title: 'Fanfiction Fandoms',
+    unsavedItems: 0,
+    id: '3',
+    href: '/projects',
+  }
+]
+
+const extensions = [
+  { 
+    title: 'HTML Parser',
+    unsavedItems: 0,
+    id: '1',
+    href: '/projects',
+  }
+]
+
+export default function TreeNav(props) {
+  const { type, ...rest } = props;
   const classes = useStyles();
 
-  const projects = [
-    { 
-      title: 'Demo Project',
-      unsavedItems: 1,
-      id: '1',
-      href: '/projects',
-    },
-    {
-      title: 'Exploratory Data Analysis',
-      unsavedItems: 4,
-      id: '2',
-      href: '/projects',
-    },
-    {
-      title: 'Thesis',
-      unsavedItems: 0,
-      id: '3',
-      href: '/projects',
-    }
-  ]
+  let items;
+  let labelText;
+  if (type === 'projects') {
+    items = projects;
+    labelText = 'Your Projects';
+  } else if (type === 'data') {
+    items = datasets;
+    labelText = 'Your Data';
+  } else if (type === 'extensions') {
+    items = extensions;
+    labelText = 'Your Extensions';
+  }
 
   return (
     <TreeView
@@ -48,21 +89,21 @@ export default function TreeNav() {
       defaultExpandIcon={<ArrowRightIcon />}
     >
       <StyledTreeItem
-        labelText="Your Projects"
-        nodeId="0"
         id="0"
+        labelText={labelText}
+        nodeId="0"
         rootNode
       >
-        {projects.map(project => (
+        {items.map(item => (
           <StyledTreeItem
             bgColor="#e8f0fe"
             color="#1a73e8"
-            href={project.href}
-            id={project.id}
-            key={project.id}
-            labelInfo={project.unsavedItems}
-            labelText={project.title}
-            nodeId={project.id}
+            href={item.href}
+            id={item.id}
+            key={item.id}
+            labelInfo={item.unsavedItems}
+            labelText={item.title}
+            nodeId={item.id}
             rootNode={false}
           />
         ))}
