@@ -1,2 +1,2 @@
-export { default as DatasetCard } from './DatasetCard';
-export { default as DataBrowserToolbar } from './DataBrowserToolbar';
+export { default as Carousel } from './Carousel';
+export { default as BrowserToolbar } from './BrowserToolbar';

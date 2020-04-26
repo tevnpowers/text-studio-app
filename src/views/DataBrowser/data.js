@@ -54,5 +54,14 @@ export default [
     imageUrl: 'https://cdn0.iconfinder.com/data/icons/database-tools/70/link-512.png',
     totalDownloads: '835',
     createdAt: '04/04/2019'
+  },
+  {
+    id: uuid(),
+    title: 'Squarespace Extra',
+    description:
+      'Squarespace provides software as a service for website building and hosting. Headquartered in NYC.',
+    imageUrl: 'https://cdn0.iconfinder.com/data/icons/database-tools/70/link-512.png',
+    totalDownloads: '835',
+    createdAt: '04/04/2019'
   }
 ];
