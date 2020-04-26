@@ -5,7 +5,8 @@ import { RouteWithLayout } from './components';
 import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 
 import {
-  DataBrowser as DataBrowserView,
+  Browse as BrowseView,
+  Home as HomeView,
   Dataset as DatasetView,
   Project as ProjectView,
   Dashboard as DashboardView,
@@ -23,7 +24,7 @@ const Routes = () => {
         to="/home"
       />
       <RouteWithLayout
-        component={DataBrowserView}
+        component={HomeView}
         exact
         layout={MainLayout}
         path="/home"
@@ -35,7 +36,7 @@ const Routes = () => {
         path="/projects/:projectId"
       />
       <RouteWithLayout
-        component={DashboardView}
+        component={BrowseView}
         exact
         layout={MainLayout}
         path="/browse"
