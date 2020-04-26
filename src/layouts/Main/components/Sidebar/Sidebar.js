@@ -2,16 +2,11 @@ import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import { Divider, Drawer, Typography as MuiTypography } from '@material-ui/core';
+import { Divider, Drawer } from '@material-ui/core';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import BookmarksOutlinedIcon from '@material-ui/icons/BookmarksOutlined';
-import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 import WidgetsOutlinedIcon from '@material-ui/icons/WidgetsOutlined';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import ImageIcon from '@material-ui/icons/Image';
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { SidebarNav, TreeNav } from './components';
 
 const useStyles = makeStyles(theme => ({
@@ -34,7 +29,10 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2)
   },
   // necessary for content to be below app bar
-  toolbar: theme.mixins.toolbar
+  toolbar: theme.mixins.toolbar,
+  treeNavs: {
+    flexGrow: 1,
+  }
 }));
 
 const Sidebar = props => {
@@ -86,7 +84,11 @@ const Sidebar = props => {
           pages={pages}
         />
         <Divider />
-        <TreeNav />
+        <div className={classes.treeNavs}>
+          <TreeNav type={'projects'}/>
+          <TreeNav type={'data'}/>
+          <TreeNav type={'extensions'}/>
+        </div>
         <SidebarNav
           className={classes.nav}
           pages={otherPages}
