@@ -1,6 +1,5 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -8,8 +7,7 @@ import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import IconButton from '@material-ui/core/IconButton';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { AnnotatorEditor, DatasetEditor, TabPanel } from './components';
-import { Dataset } from 'views';
+import { AnnotatorEditor, DatasetEditor, PipelineEditor, TabPanel } from './components';
 
 
 const useStyles = makeStyles(theme => ({
@@ -37,7 +35,7 @@ function a11yProps(index) {
 }
 
 const ContentEditor = props => {
-  const { className, data, ...rest } = props;
+  const { className, elements, tabs, onTabClose, ...rest } = props;
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -46,8 +44,9 @@ const ContentEditor = props => {
   };
 
 
-  const handleTabClick = (event, tab) => {
-    let tabId = event.target.getAttribute('id');
+  const handleTabClick = (id) => {
+    console.log('ID clicked: ', id)
+    onTabClose(id)
     event.stopPropagation();
   };
 
@@ -55,6 +54,7 @@ const ContentEditor = props => {
     return (
       <Tab
         component="div"
+        key={id}
         label={
           <div
             className={classes.tabContainer}
@@ -62,7 +62,7 @@ const ContentEditor = props => {
             {title}
             <IconButton
               id={id}
-              onClick={handleTabClick}
+              onClick={() => handleTabClick(id)}
             >
               <CloseRoundedIcon
                 className={classes.icon}
@@ -75,6 +75,76 @@ const ContentEditor = props => {
     )
   }
 
+  const getTabs = (components, ids) => {
+    let tabs = []
+    for (var id of ids) {
+      for (var component of components) {
+        if (id === component.id) {
+          tabs.push(getTab(component.name, component.id))
+        }
+      }
+    }
+    return tabs;
+  }
+
+  const getAnnotationEditor = (idx, obj) => {
+    return (
+      <TabPanel
+        index={idx}
+        key={obj.id}
+        value={value}
+      >
+        <AnnotatorEditor
+          data={obj}
+          type={obj.type}
+        />
+      </TabPanel>)
+  }
+
+  const getPipelineEditor = (idx, obj, components) => {
+    return (
+      <TabPanel
+        index={idx}
+        key={obj.id}
+        value={value}
+      >
+        <PipelineEditor
+          components={components}
+          data={obj}
+        />
+      </TabPanel>)
+  }
+
+  const getDatasetEditor = (idx, obj) => {
+    return (
+      <TabPanel
+        index={idx}
+        key={obj.id}
+        value={value}
+      >
+        <DatasetEditor data={obj}/>
+      </TabPanel>)
+  }
+
+  const getEditors = (components, ids) => {
+    let editors = []
+    for (var i = 0; i < ids.length; i++) {
+      for (var component of components) {
+        if (component.id === ids[i]) {
+          if (component.type === 'annotators' ||
+              component.type === 'loaders' ||
+              component.type === 'actions') {
+            editors.push(getAnnotationEditor(i, component))
+          } else if (component.type === 'data') {
+            editors.push(getDatasetEditor(i, component))
+          } else if (component.type === 'pipelines') {
+            editors.push(getPipelineEditor(i, component, components))
+          }
+        }
+      }
+    }
+    return editors;
+  }
 
   return (
     <div className={classes.root}>
@@ -91,32 +161,19 @@ const ContentEditor = props => {
           value={value}
           variant="scrollable"
         >
-          {getTab('HTML Parser', 1)}
-          {getTab('Fanfiction Dataset', 2)}
+          {getTabs(elements, tabs)}
         </Tabs>
       </AppBar>
-      <TabPanel
-        index={0}
-        value={value}
-      >
-        <AnnotatorEditor
-          data={data.annotators[0]}
-          type={'annotator'}
-        />
-      </TabPanel>
-      <TabPanel
-        index={1}
-        value={value}
-      >
-        <DatasetEditor data={data.data[0]}/>
-      </TabPanel>
+      {getEditors(elements, tabs)}
     </div>
   );
 };
 
 ContentEditor.propTypes = {
   className: PropTypes.string,
-  data: PropTypes.object.isRequired
+  elements: PropTypes.array.isRequired,
+  onTabClose: PropTypes.func.isRequired,
+  tabs: PropTypes.array.isRequired
 };
 
 export default ContentEditor;

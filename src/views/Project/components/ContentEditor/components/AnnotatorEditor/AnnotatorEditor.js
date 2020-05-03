@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
+import IconButton from '@material-ui/core/IconButton';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import {
   Card,
   CardHeader,
@@ -15,7 +17,10 @@ import {
 } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
-  root: {},
+  root: {
+    width: '100%',
+    minWidth: 750
+  },
   container: {
     //margin: '0 auto',
     //width: '100%'
@@ -46,7 +51,7 @@ const AnnotatorEditor = props => {
     });
   };
 
-  const getConfigInput = (data, classes) => {
+  const getConfigInput = (data, classes, type, id) => {
     let inputs = []
 
     // Keys
@@ -59,16 +64,23 @@ const AnnotatorEditor = props => {
           gutterBottom
           variant="h4"
         >
-        Parameters
+          {type === 'annotators' ? 'Parameters' : 'Configuration'}
         </Typography>
       </div>
     )
 
-    data.config.keys.map(key => {
+    let configArray = null;
+    if (type === 'annotators' || type === 'actions') {
+      configArray = data.config.keys;
+    } else {
+      configArray = data.config;
+    }
+
+    configArray.map(key => {
       inputs.push(
         <div
           className={classes.child}
-          key={'key' + key}
+          key={'key' + key.name + id}
         >
           <TextField
             fullWidth
@@ -86,43 +98,58 @@ const AnnotatorEditor = props => {
     })
 
 
-    // Annotations
-    inputs.push(
-      <div
-        className={classes.child}
-        key="annotationHeader"
-      >
-        <Typography
-          gutterBottom
-          variant="h4"
-        >
-          Output
-        </Typography>
-      </div>
-    )
-  
-    data.config.annotations.map(annotation => {
+    if (type === 'annotators') {
+      // Annotations
       inputs.push(
         <div
           className={classes.child}
-          key={'annotation' + annotation}
+          key={'annotationHeader' + id}
         >
-          <TextField
-            fullWidth
-            helperText={annotation.description}
-            label={annotation.name}
-            margin="dense"
-            name={annotation + 'Name'}
-            onChange={handleChange}
-            required
-            value={annotation.value}
-            variant="outlined"
-          />
+          <Typography
+            gutterBottom
+            variant="h4"
+          >
+          Output
+          </Typography>
         </div>
       )
-    })
+  
+      data.config.annotations.map(annotation => {
+        inputs.push(
+          <div
+            className={classes.child}
+            key={'annotation' + annotation.name + id}
+          >
+            <TextField
+              fullWidth
+              helperText={annotation.description}
+              label={annotation.name}
+              margin="dense"
+              name={annotation + 'Name'}
+              onChange={handleChange}
+              required
+              value={annotation.value}
+              variant="outlined"
+            />
+          </div>
+        )
+      })
+    }
     return inputs
   }
+
+  let header = ''
+  if (type === 'annotators') {
+    header = 'Annotator'
+  } else if (type === 'actions') {
+    header =' Action'
+  } else if (type === 'loaders') {
+    header =' Dataset Loader'
+  } else {
+    header = type
+  }
+
+  let descriptionText = header.toLowerCase()
 
   return (
     <Card
@@ -134,8 +161,13 @@ const AnnotatorEditor = props => {
         noValidate
       >
         <CardHeader
+          action={
+            <IconButton aria-label="settings">
+              <EditOutlinedIcon />
+            </IconButton>
+          }
           subheader={data.id}
-          title={'Annotator'}
+          title={header}
         />
         <Divider />
         <CardContent>
@@ -157,7 +189,7 @@ const AnnotatorEditor = props => {
             >
               <TextField
                 fullWidth
-                helperText="Display name for this annotator in your project"
+                helperText={'Display name for this ' + descriptionText + ' in your project'}
                 label="Name"
                 margin="dense"
                 name="annotatorName"
@@ -167,7 +199,7 @@ const AnnotatorEditor = props => {
                 variant="outlined"
               />
             </div>
-            {getConfigInput(data, classes)}
+            {getConfigInput(data, classes, type, data.id)}
           </div>
         </CardContent>
         <Divider />
@@ -176,7 +208,7 @@ const AnnotatorEditor = props => {
             color="primary"
             variant="contained"
           >
-            Save details
+            Save
           </Button>
         </CardActions>
       </form>

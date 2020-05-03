@@ -3,14 +3,18 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
+import IconButton from '@material-ui/core/IconButton';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import {
   Card,
   CardHeader,
   CardContent,
   CardActions,
+  Chip,
   Divider,
   Button,
 } from '@material-ui/core';
+
 import { DatasetViewer } from 'components'
 
 const useStyles = makeStyles(() => ({
@@ -28,6 +32,23 @@ const DatasetEditor = props => {
   const { className, data, ...rest } = props;
   const classes = useStyles();
 
+  const getLanguageChips = languages => {
+    let chips = []
+    for (var lang of languages) {
+      chips.push(
+        <Chip
+          color="primary"
+          key={lang}
+          label={lang}
+          size="small"
+          variant="outlined"
+        />
+      )
+    }
+
+    return chips
+  }
+
   return (
     <div className={classes.container}>
       <div className={classes.child}>
@@ -40,6 +61,11 @@ const DatasetEditor = props => {
             noValidate
           >
             <CardHeader
+              action={
+                <IconButton aria-label="settings">
+                  <EditOutlinedIcon />
+                </IconButton>
+              }
               subheader={data.path}
               title={data.name}
             />
@@ -53,6 +79,7 @@ const DatasetEditor = props => {
                 >
                   {data.description}
                 </Typography>
+                {getLanguageChips(data.languages)}
               </div>
             </CardContent>
             <Divider />
@@ -61,7 +88,7 @@ const DatasetEditor = props => {
                 color="primary"
                 variant="contained"
               >
-            Save details
+            Save
               </Button>
             </CardActions>
           </form>
