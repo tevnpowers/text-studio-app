@@ -130,10 +130,13 @@ function openProjectFromMenu(event, focusedWindow, focusedWebContents) {
     properties: ['openFile']
   })
 
+  //console.log('Opening: ', path)
+
   if (path !== undefined && path.length == 1) {
     path = path[0]
     openProject(path).then(response => {
       let window = BrowserWindow.getFocusedWindow()
+      //console.log('Sending response: ', response)
       window.webContents.send(OPEN_PROJECT, response);
     });
   }
