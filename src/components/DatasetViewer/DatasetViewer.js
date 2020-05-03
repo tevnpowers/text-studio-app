@@ -31,6 +31,10 @@ class DatasetViewer extends React.Component {
     ipcRenderer.send(GET_DATASET, this.state.datasetId);
   }
 
+  componentWillUnmount() {
+    ipcRenderer.removeAllListeners(RETURN_DATASET);
+  }
+
   setIpcFuncs() {
     ipcRenderer.on(RETURN_DATASET, (event, arg) => {
       let data = arg
