@@ -46,7 +46,6 @@ class TabBrowser extends React.Component {
               <Grid
                 item
                 key={item.id}
-                lg={3}
                 md={4}
                 xs={12}
               >

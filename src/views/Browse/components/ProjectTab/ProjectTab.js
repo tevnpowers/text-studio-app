@@ -1,9 +1,9 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import TabBrowser from '../TabBrowser'
-import mockData from './data'
+import { datasets, extensions, projects } from './data'
 
-export default function ProjectTab() {
+export default function ProjectTab(props) {
 /* 
   classes: PropTypes.object,
   endIndex: PropTypes.number,
@@ -13,12 +13,20 @@ export default function ProjectTab() {
   startIndex: PropTypes.number,
   total: PropTypes.number
 */
+  let collection = null;
+  if (props.type === 'projects') {
+    collection = projects
+  } else if (props.type === 'datasets') {
+    collection = datasets
+  } else if (props.type === 'extensions') {
+    collection = extensions
+  }
 
-
+  console.log(collection)
   return (
     <TabBrowser
       endIndex={10}
-      items={mockData}
+      items={collection}
       startIndex={1}
       total={10}
     />

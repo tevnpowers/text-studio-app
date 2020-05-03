@@ -1,10 +1,13 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { ProjectTab, TabPanel } from './components';
+import { SearchInput } from 'components';
+import { removeListeners, setIpcFuncs } from '../../Redirect'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,6 +28,15 @@ const useStyles = makeStyles(theme => ({
   },
   tabPanel: {
     // backgroundColor: '#DEE6E7',
+  },
+  row: {
+    height: '42px',
+    display: 'flex',
+    alignItems: 'center',
+    margin: theme.spacing(1)
+  },
+  searchInput: {
+    marginRight: theme.spacing(1)
   }
 }));
 
@@ -38,6 +50,8 @@ function a11yProps(index) {
 const Browse = props => {
   const classes = useStyles();
   const [value, setValue] = useState(0);
+  const [redirectInfo, setRedirectInfo] = useState({});
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -53,9 +67,43 @@ const Browse = props => {
     )
   }
 
+  const onProjectReceive = (redirect, info) => {
+    //console.log('redirecting to...', redirect)
+    let obj = {
+      projectInfo: info,
+      redirect: '/projects/' + redirect
+    }
+    setRedirectInfo(obj)
+  }
+
+  useEffect(() => {
+    setIpcFuncs(onProjectReceive);
+
+    // Specify how to clean up after this effect:
+    return function cleanup() {
+      removeListeners();
+    };
+  });
+
+  if (redirectInfo.redirect && redirectInfo.projectInfo) {
+    console.log('Redirecting: ', redirectInfo)
+    return (
+      <Redirect
+        to={{
+          pathname: redirectInfo.redirect,
+          state: { projectInfo: redirectInfo.projectInfo }
+        }}
+      />)
+  }
 
   return (
     <div className={classes.root}>
+      <div className={classes.row}>
+        <SearchInput
+          className={classes.searchInput}
+          placeholder={'Search Text Studio items...'}
+        />
+      </div>
       <AppBar
         color="default"
         elevation={0}
@@ -80,21 +128,21 @@ const Browse = props => {
         index={0}
         value={value}
       >
-        <ProjectTab />
+        <ProjectTab type="projects"/>
       </TabPanel>
       <TabPanel
         className={classes.tabPanel}
         index={1}
         value={value}
       >
-        <ProjectTab />
+        <ProjectTab type="datasets"/>
       </TabPanel>
       <TabPanel
         className={classes.tabPanel}
         index={2}
         value={value}
       >
-        <ProjectTab />
+        <ProjectTab type="extensions"/>
       </TabPanel>
     </div>
   );
