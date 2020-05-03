@@ -74,15 +74,15 @@ class Project(object):
 
     def __repr__(self):
         description = "Author: {}\nCreated: {}\nSaved: {}\n".format(
-            self.project_info["author"],
-            self.project_info["created_time"],
-            self.project_info["saved_timed"],
+            self.project_info["metadata"]["author"],
+            self.project_info["metadata"]["created"],
+            self.project_info["metadata"]["saved"],
         )
 
         if self.data_loaders:
             description += "\nData Loaders:\n----------\n"
             for id, loader in self.data_loaders.items():
-                description += "{}\t\t{}\n".format(loader["name"], id)
+                description += "{}\t\t{}\n".format(loader["display_name"], id)
 
         if self.datasets:
             description += "\nDatasets:\n----------\n"
@@ -148,6 +148,7 @@ class Project(object):
         id = UUID(info["id"])
         self.data_loaders[id] = {
             "name": info["name"],
+            "display_name": info["display_name"],
             "loader": loader_class,
             "kwargs": info["config"],
         }
