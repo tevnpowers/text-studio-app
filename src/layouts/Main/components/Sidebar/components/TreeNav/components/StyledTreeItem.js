@@ -8,7 +8,10 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import projectData from './data';
+import projectData2 from './data2';
+import projectData3 from './data3';
+
 const useTreeItemStyles = makeStyles((theme) => ({
   root: {
     color: theme.palette.text.secondary,
@@ -57,7 +60,9 @@ const CustomRouterLink = forwardRef((props, ref) => (
     ref={ref}
     style={{ flexGrow: 1 }}
   >
-    <RouterLink {...props} />
+    <RouterLink
+      {...props}
+    />
   </div>
 ));
 
@@ -116,8 +121,23 @@ export default function StyledTreeItem(props) {
   }
 
   let routerInfo;
+
+  let data;
+  if (id === '1' ) {
+    data = projectData
+  } else if (id === '2') {
+    data = projectData2
+  } else {
+    data = projectData3
+  }
   if (!rootNode) {
-    routerInfo = { component: CustomRouterLink, to: '/projects/' + id }
+    routerInfo = {
+      component: CustomRouterLink,
+      to: {
+        pathname:'/projects/' + id,
+        state: { projectInfo: data }
+      }
+    }
   }
 
   return (
