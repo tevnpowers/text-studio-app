@@ -12,6 +12,8 @@ import Divider from '@material-ui/core/Divider';
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.white,
+    width: '100%',
+    minWidth: 200,
     padding: 20
   },
   divider: {
@@ -20,7 +22,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const projectItemsToSkip = [
-  'metadata'
+  'metadata',
+  'path'
 ]
 
 function MinusSquare(props) {
@@ -49,7 +52,7 @@ function PlusSquare(props) {
   );
 }
 
-function crawlProjectTree(node)  {
+function crawlProjectTree(node, onClick) {
   let elements = [];
   if (Array.isArray(node)) {
     for (var i in node) {
@@ -60,6 +63,7 @@ function crawlProjectTree(node)  {
             key={childNode.name}
             label={childNode.name}
             nodeId={childNode.name}
+            onDoubleClick={() => onClick(childNode.id)}
           />
         )
       }
@@ -68,7 +72,7 @@ function crawlProjectTree(node)  {
   return elements;
 }
 
-function getTreeItems(project) {
+function getTreeItems(project, onClick) {
   let elements = [];
   for (var key in project) {
     if (!projectItemsToSkip.includes(key)) {
@@ -78,7 +82,7 @@ function getTreeItems(project) {
           label={key}
           nodeId={key}
         >
-          {crawlProjectTree(project[key])}
+          {crawlProjectTree(project[key], onClick)}
         </StyledTreeItem>
       )
     }
@@ -87,7 +91,7 @@ function getTreeItems(project) {
 }
 
 export default function FileTray(props) {
-  const { projectContents } = props;
+  const { onNodeClick, projectContents } = props;
   const classes = useStyles();
 
   return (
@@ -101,10 +105,10 @@ export default function FileTray(props) {
         defaultExpandIcon={<PlusSquare />}
       >
         <StyledTreeItem
-          label="Main"
+          label="Project Files"
           nodeId="1"
         >
-          {getTreeItems(projectContents)}
+          {getTreeItems(projectContents, onNodeClick)}
         </StyledTreeItem>
       </TreeView>
       <Divider className={classes.divider} />
@@ -113,5 +117,6 @@ export default function FileTray(props) {
 }
 
 FileTray.propTypes = {
-  projectContents: PropTypes.object.isRequired
+  onNodeClick: PropTypes.func.isRequired,
+  projectContents: PropTypes.object
 };

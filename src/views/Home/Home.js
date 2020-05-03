@@ -1,9 +1,11 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 import { BrowserToolbar, Carousel } from './components';
+import { removeListeners, setIpcFuncs } from '../../Redirect'
+import { datasets, extensions, projects } from './data';
 
-import mockData from './data';
 
 const styles = theme => ({
   root: {
@@ -26,23 +28,59 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      datasets: mockData,
+      datasets: datasets,
+      extensions: extensions,
+      projects: projects,
       datasetsStart: 0,
       extensionsStart: 0,
       projectsStart: 0,
+      redirect: null,
+      projectInfo: null
     }
 
-    this.totalDatasets = mockData.length;
-    this.totalExtensions = mockData.length;
-    this.totalProjects = mockData.length;
+    this.totalDatasets = datasets.length;
+    this.totalExtensions = extensions.length;
+    this.totalProjects = projects.length;
     this.createNew = this.createNew.bind(this);
     this.nextPage = this.nextPage.bind(this);
     this.previousPage = this.previousPage.bind(this);
     this.searchDatasets = this.searchDatasets.bind(this);
+    this.onProjectReceive = this.onProjectReceive.bind(this);
+  }
+
+  onProjectReceive(redirect, info) {
+    console.log('redirecting from home to...', redirect)
+    console.log('project info from home...', info)
+    info.metadata.id = redirect
+    this.setState(state => ({
+      projectInfo: info,
+      redirect: '/projects/' + redirect
+    }));
+  }
+
+  componentDidMount() {
+    setIpcFuncs(this.onProjectReceive);
+  }
+
+  componentWillUnmount() {
+    removeListeners();
   }
 
   render() {
     const classes = this.props.classes;
+
+    if (this.state.redirect) {
+      console.log('Redirecting to (from home): ', this.state.redirect)
+      return (
+        <Redirect
+          to={{
+            pathname: this.state.redirect,
+            state: { projectInfo: this.state.projectInfo }
+          }}
+        />)
+    }
+
+    console.log('no redirect!!!')
 
     return (
       <div className={classes.root}>
@@ -56,7 +94,7 @@ class Home extends React.Component {
           />
           <Carousel
             endIndex={this.state.projectsStart + VISIBLE_ITEMS}
-            items={this.state.datasets.slice(this.state.projectsStart, this.state.projectsStart + VISIBLE_ITEMS)}
+            items={this.state.projects.slice(this.state.projectsStart, this.state.projectsStart + VISIBLE_ITEMS)}
             newText="New Project"
             nextPage={() => this.nextPage(0)}
             previousPage={() => this.previousPage(0)}
@@ -94,7 +132,7 @@ class Home extends React.Component {
           />
           <Carousel
             endIndex={this.state.extensionsStart + VISIBLE_ITEMS}
-            items={this.state.datasets.slice(this.state.extensionsStart, this.state.extensionsStart + VISIBLE_ITEMS)}
+            items={this.state.extensions.slice(this.state.extensionsStart, this.state.extensionsStart + VISIBLE_ITEMS)}
             newText="New Extension"
             nextPage={() => this.nextPage(2)}
             previousPage={() => this.previousPage(2)}
