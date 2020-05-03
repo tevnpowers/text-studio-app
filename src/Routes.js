@@ -48,7 +48,7 @@ const Routes = () => {
         path="/dataset/:datasetId"
       />
       <RouteWithLayout
-        component={AccountView}
+        component={BrowseView}
         exact
         layout={MainLayout}
         path="/bookmarks"
