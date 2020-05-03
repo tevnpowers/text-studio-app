@@ -12,7 +12,7 @@ import {
   Divider
 } from '@material-ui/core';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import BookmarksIcon from '@material-ui/icons/Bookmarks';
 
 const styles = theme => ({
   root: {},
@@ -66,9 +66,16 @@ class DatasetCard extends React.Component {
             </Typography>
             <Typography
               align="center"
-              variant="body1"
+              gutterBottom
+              variant="h6"
             >
-              {dataset.description}
+              {dataset.user}
+            </Typography>
+            <Typography
+              align="center"
+              variant="body2"
+            >
+              {dataset.description.slice(0, 175) + '...'}
             </Typography>
           </CardContent>
         </Link>
@@ -94,12 +101,12 @@ class DatasetCard extends React.Component {
               className={classes.statsItem}
               item
             >
-              <GetAppIcon className={classes.statsIcon} />
+              <BookmarksIcon className={classes.statsIcon} />
               <Typography
                 display="inline"
                 variant="body2"
               >
-                {dataset.totalDownloads} Downloads
+                {dataset.totalDownloads} Bookmarks
               </Typography>
             </Grid>
           </Grid>
