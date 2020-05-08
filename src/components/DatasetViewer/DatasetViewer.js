@@ -1,12 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/styles';
 import { DatasetToolbar, DatasetTable } from './components'
 
-const { ipcRenderer } = require('electron');
-const { GET_DATASET, RETURN_DATASET } = require('../../../utils/constants')
-
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: {},
   content: {
     marginTop: theme.spacing(2)
@@ -16,51 +13,24 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'flex-end'
   }
-});
+}));
 
-class DatasetViewer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [],
-      datasetId: props.id
-    }
+const DatasetViewer = props => {
+  const classes = useStyles();
 
-    this.setIpcFuncs = this.setIpcFuncs.bind(this)
-    this.setIpcFuncs()
-    ipcRenderer.send(GET_DATASET, this.state.datasetId);
-  }
-
-  componentWillUnmount() {
-    ipcRenderer.removeAllListeners(RETURN_DATASET);
-  }
-
-  setIpcFuncs() {
-    ipcRenderer.on(RETURN_DATASET, (event, arg) => {
-      let data = arg
-      console.log(data)
-      this.setState({
-        data: data
-      });
-    });
-  }
-
-  render() {
-    const classes = this.props.classes;
-    return (
-      <div className={classes.root}>
-        <DatasetToolbar />
-        <div className={classes.content}>
-          <DatasetTable data={this.state.data}/>
-        </div>
+  return (
+    <div className={classes.root}>
+      <DatasetToolbar />
+      <div className={classes.content}>
+        <DatasetTable data={props.data}/>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 DatasetViewer.propTypes = {
   classes: PropTypes.object,
-  id: PropTypes.string
+  data: PropTypes.array,
 };
 
-export default withStyles(styles)(DatasetViewer);
+export default DatasetViewer;

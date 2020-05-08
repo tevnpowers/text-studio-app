@@ -1,5 +1,5 @@
 const { ipcRenderer } = require('electron');
-const { OPEN_PROJECT } = require('../utils/constants');
+const { OPEN_PROJECT, RETURN_DATASET } = require('../utils/constants');
 ///import projectData from './views/Project/data';
 
 
@@ -14,6 +14,7 @@ const setIpcFuncs = (onProjectReceive) => {
 const removeListeners = () => {
   // console.log('removing all listeners!')
   ipcRenderer.removeAllListeners(OPEN_PROJECT);
+  ipcRenderer.removeAllListeners(RETURN_DATASET);
 }
 
 module.exports = {

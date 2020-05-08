@@ -30,7 +30,7 @@ class TextStudioAPI(object):
             {"id": 3, "name": "Amy", "age": 35, "graduated": True},
             {"id": 4, "name": "Mike", "age": 19, "graduated": False},
         ]
-        return instances
+        return {'id': id_string, 'data': instances}
 
     def tokenize(self, text):
         """split text on white space"""

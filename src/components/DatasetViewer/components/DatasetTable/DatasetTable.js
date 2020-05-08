@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DatsetTable = props => {
+const DatasetTable = props => {
   const { className, data, ...rest } = props;
 
   const classes = useStyles();
@@ -186,9 +186,9 @@ const DatsetTable = props => {
   );
 };
 
-DatsetTable.propTypes = {
+DatasetTable.propTypes = {
   className: PropTypes.string,
   data: PropTypes.array.isRequired
 };
 
-export default DatsetTable;
+export default DatasetTable;

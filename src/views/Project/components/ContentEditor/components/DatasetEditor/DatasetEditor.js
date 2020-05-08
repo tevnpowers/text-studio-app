@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
@@ -14,8 +14,8 @@ import {
   Divider,
   Button,
 } from '@material-ui/core';
-
 import { DatasetViewer } from 'components'
+
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -29,8 +29,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 const DatasetEditor = props => {
-  const { className, data, ...rest } = props;
+  const { className, datasetInfo, data, ...rest } = props;
   const classes = useStyles();
+  console.log('editor data: ', data)
 
   const getLanguageChips = languages => {
     let chips = []
@@ -49,6 +50,8 @@ const DatasetEditor = props => {
     return chips
   }
 
+  console.log('rendering dataset editor...')
+
   return (
     <div className={classes.container}>
       <div className={classes.child}>
@@ -66,8 +69,8 @@ const DatasetEditor = props => {
                   <EditOutlinedIcon />
                 </IconButton>
               }
-              subheader={data.path}
-              title={data.name}
+              subheader={datasetInfo.path}
+              title={datasetInfo.name}
             />
             <Divider />
             <CardContent>
@@ -77,9 +80,9 @@ const DatasetEditor = props => {
                   gutterBottom
                   variant="body2"
                 >
-                  {data.description}
+                  {datasetInfo.description}
                 </Typography>
-                {getLanguageChips(data.languages)}
+                {getLanguageChips(datasetInfo.languages)}
               </div>
             </CardContent>
             <Divider />
@@ -96,7 +99,8 @@ const DatasetEditor = props => {
       </div>
       <div className={classes.child}>
         <DatasetViewer
-          id={data.id}
+          data={data}
+          id={datasetInfo.id}
         />
       </div>
     </div>
@@ -105,7 +109,8 @@ const DatasetEditor = props => {
 
 DatasetEditor.propTypes = {
   className: PropTypes.string,
-  data: PropTypes.object
+  data: PropTypes.array,
+  datasetInfo: PropTypes.object
 };
 
 export default DatasetEditor;

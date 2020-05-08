@@ -69,14 +69,14 @@ async function loadDatasetFromFile(id) {
 async function loadDatasetMock(id) {
   console.log("Loading dataset", id)
   let promise = new Promise((resolve, reject) => {
-    let dataset = {}
+    let data = {'id': id}
     client.invoke("load_dataset_mock", id, (error, res) => {
       if (error) {
         console.error(error)
       } else {
-        dataset = res;
+        data = res;
       }
-      resolve(dataset);
+      resolve(data);
     })
   });
   return await promise;

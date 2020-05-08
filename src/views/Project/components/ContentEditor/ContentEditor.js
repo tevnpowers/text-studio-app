@@ -7,6 +7,7 @@ import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import IconButton from '@material-ui/core/IconButton';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Paper from '@material-ui/core/Paper';
 import { AnnotatorEditor, DatasetEditor, PipelineEditor, TabPanel } from './components';
 
 
@@ -15,6 +16,11 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     width: '100%',
     backgroundColor: '#DEE6E7',
+  },
+  empty: {
+    minHeight: 200,
+    minWidth: 200,
+    backgroundColor: theme.palette.background.default,
   },
   icon: {
     height: '12px',
@@ -35,17 +41,16 @@ function a11yProps(index) {
 }
 
 const ContentEditor = props => {
-  const { className, elements, tabs, onTabClose, ...rest } = props;
+  const { className, datasets, elements, tabs, onTabClose, ...rest } = props;
+  console.log('datasets in content editor ', datasets)
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-
   const handleTabClick = (id) => {
-    console.log('ID clicked: ', id)
     onTabClose(id)
     event.stopPropagation();
   };
@@ -122,7 +127,10 @@ const ContentEditor = props => {
         key={obj.id}
         value={value}
       >
-        <DatasetEditor data={obj}/>
+        <DatasetEditor
+          data={datasets[obj.id] !== undefined ? datasets[obj.id]: []}
+          datasetInfo={obj}
+        />
       </TabPanel>)
   }
 
@@ -144,6 +152,29 @@ const ContentEditor = props => {
       }
     }
     return editors;
+  }
+
+  const getEmptyEditor = () => {
+    /*
+    return (
+      <Paper
+        className={classes.empty}
+        elevation={5}
+      >
+            You have no editors open!
+      </Paper>
+    ) */
+    return (<div/>)
+  }
+
+  if (tabs.length === 0) {
+    return getEmptyEditor();
+  }
+
+
+  if (value !== 0 && value > tabs.length - 1) {
+    console.log('updating to last tab!')
+    setValue(tabs.length - 1);
   }
 
   return (
@@ -171,9 +202,10 @@ const ContentEditor = props => {
 
 ContentEditor.propTypes = {
   className: PropTypes.string,
+  datasets: PropTypes.object.isRequired,
   elements: PropTypes.array.isRequired,
   onTabClose: PropTypes.func.isRequired,
-  tabs: PropTypes.array.isRequired
+  tabs: PropTypes.array.isRequired,
 };
 
 export default ContentEditor;

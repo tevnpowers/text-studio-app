@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { removeListeners, setIpcFuncs } from '../../Redirect'
+const { ipcRenderer } = require('electron');
+const { GET_DATASET, RETURN_DATASET } = require('../../../utils/constants')
 
 import {
   ContentEditor,
@@ -45,9 +47,7 @@ const Project = (props) => {
 
   const [projectInfo, setProjectInfo] = useState(initialProjectInfo);
   const [openTabs, setOpenTabs] = useState([]);
-
-  //console.log('projectInfo (state): ', projectInfo)
-  //console.log('props: ', props)
+  const [datasets, setDatasets] = useState({});
 
   useEffect(() => {
     //console.log('useEffect (after PROPS change) real: ', props)
@@ -57,18 +57,26 @@ const Project = (props) => {
   }, [props]);
 
   useEffect(() => {
-    // console.log('useEffect (project info after STATE change) real: ', projectId, ' initial: ', initialProjectId)
-  }, [projectInfo]);
-
-  useEffect(() => {
     //console.log('useEffect (after MOUNT) real: ', projectId, ' initial: ', initialProjectId)
+    //console.log('setting up ipc funcs...')
     setIpcFuncs(onProjectReceive);
+    ipcRenderer.once(RETURN_DATASET, (event, arg) => {
+      console.log('updating data upon return...', arg.id)
+      console.log({
+        ...datasets,
+        [arg.id]: arg.data
+      })
+      setDatasets({
+        ...datasets,
+        [arg.id]: arg.data
+      })
+    });
 
     // Specify how to clean up after this effect:
     return function cleanup() {
       //console.log('inside effects for cleanup')
       removeListeners();
-    };  
+    };
   });
 
   const onProjectReceive = (redirect, info) => {
@@ -82,6 +90,12 @@ const Project = (props) => {
     let tabs = openTabs.slice()
     if (!tabs.includes(id)) {
       tabs.push(id)
+      for (var i in elements) {
+        if (id === elements[i].id && elements[i].type == 'data') {
+          console.log('requesting dataset ', id)
+          ipcRenderer.send(GET_DATASET, id);
+        }
+      }
       setOpenTabs(tabs)
     }
   }
@@ -121,9 +135,9 @@ const Project = (props) => {
     return elements
   }
 
+  // console.log('re-rendering project...')
   //console.log('Open Tabs: ', {openTabs})
   let elements = getProjectElements(projectInfo);
-  //console.log(elements)
   // console.log('before return real: ', projectId, ' initial: ', props.match.params.projectId)
   // Project Info: {JSON.stringify(projectInfo)}
   // console.log('project info ', projectInfo)
@@ -140,6 +154,7 @@ const Project = (props) => {
         </div>
         <div>
           <ContentEditor 
+            datasets={datasets}
             elements={elements}
             onTabClose={closeProjectItem}
             tabs={openTabs}
