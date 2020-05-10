@@ -50,22 +50,14 @@ const Project = (props) => {
   const [datasets, setDatasets] = useState({});
 
   useEffect(() => {
-    //console.log('useEffect (after PROPS change) real: ', props)
     if (props.location.state) {
       setProjectInfo(props.location.state.projectInfo)
     }
   }, [props]);
 
   useEffect(() => {
-    //console.log('useEffect (after MOUNT) real: ', projectId, ' initial: ', initialProjectId)
-    //console.log('setting up ipc funcs...')
     setIpcFuncs(onProjectReceive);
     ipcRenderer.once(RETURN_DATASET, (event, arg) => {
-      console.log('updating data upon return...', arg.id)
-      console.log({
-        ...datasets,
-        [arg.id]: arg.data
-      })
       setDatasets({
         ...datasets,
         [arg.id]: arg.data
@@ -74,13 +66,11 @@ const Project = (props) => {
 
     // Specify how to clean up after this effect:
     return function cleanup() {
-      //console.log('inside effects for cleanup')
       removeListeners();
     };
   });
 
   const onProjectReceive = (redirect, info) => {
-    //console.log('redirecting to...', redirect)
     info.metadata.id = redirect
     setProjectInfo(info)
     //setProjectId(redirect)
@@ -92,7 +82,6 @@ const Project = (props) => {
       tabs.push(id)
       for (var i in elements) {
         if (id === elements[i].id && elements[i].type == 'data') {
-          console.log('requesting dataset ', id)
           ipcRenderer.send(GET_DATASET, id);
         }
       }
@@ -135,12 +124,8 @@ const Project = (props) => {
     return elements
   }
 
-  // console.log('re-rendering project...')
-  //console.log('Open Tabs: ', {openTabs})
   let elements = getProjectElements(projectInfo);
-  // console.log('before return real: ', projectId, ' initial: ', props.match.params.projectId)
-  // Project Info: {JSON.stringify(projectInfo)}
-  // console.log('project info ', projectInfo)
+
   return (
     <div
       className={classes.root}
