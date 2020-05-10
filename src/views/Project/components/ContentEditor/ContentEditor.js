@@ -42,7 +42,6 @@ function a11yProps(index) {
 
 const ContentEditor = props => {
   const { className, datasets, elements, tabs, onTabClose, ...rest } = props;
-  console.log('datasets in content editor ', datasets)
   const classes = useStyles();
   const [value, setValue] = useState(0);
 

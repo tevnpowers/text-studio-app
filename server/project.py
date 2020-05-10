@@ -217,7 +217,8 @@ class Project(object):
             dataset.load()
 
     def load_dataset(self, dataset_id):
-        self.datasets[dataset_id].load()
+        if not self.datasets[dataset_id].loaded:
+            self.datasets[dataset_id].load()
         return self.datasets[dataset_id].instances
 
     def run(self, id, input_data_id, output_data_path, verbose=False):

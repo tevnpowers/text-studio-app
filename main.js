@@ -148,7 +148,7 @@ ipcMain.on(LOAD_DATA, (event, arg) => {
 
 ipcMain.on(GET_DATASET, (event, arg) => {
   console.log("dataset 001 ", arg)
-  loadDatasetMock(arg).then(response => {
+  loadDataset(arg).then(response => {
     event.sender.send(RETURN_DATASET, response)
   });
 })

@@ -93,8 +93,13 @@ const DatasetTable = props => {
     keys.map(key => {
       if (key in data) {
         let value = data[key]
-        if (typeof value === 'object' || typeof value == 'boolean') {
+        let dataType = typeof value
+        if (dataType === 'object' || dataType == 'boolean') {
           value = JSON.stringify(value)
+        } else if (dataType === 'string') {
+          if (value.length > 20) {
+            value = value.slice(0, 20) + '...'
+          }
         }
         cells.push(<TableCell key={key}>{value}</TableCell>)
       } else {
@@ -148,11 +153,11 @@ const DatasetTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.slice(0, rowsPerPage).map(rowData => (
+                {data.slice(0, rowsPerPage).map((rowData, index) => (
                   <TableRow
                     className={classes.tableRow}
                     hover
-                    key={rowData.id}
+                    key={index}
                     selected={selectedData.indexOf(rowData.id) !== -1}
                   >
                     <TableCell padding="checkbox">

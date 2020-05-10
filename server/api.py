@@ -17,7 +17,7 @@ class TextStudioAPI(object):
         instances = []
         project = self.projects[0]
         instances = project.load_dataset(id)
-        return instances
+        return {'id': id_string, 'data': instances}
 
     def load_dataset_from_file(self, path):
         pass
