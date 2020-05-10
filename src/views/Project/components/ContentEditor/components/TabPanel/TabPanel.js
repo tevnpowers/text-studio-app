@@ -8,11 +8,11 @@ export default function TabPanel(props) {
 
   return (
     <Typography
+      aria-labelledby={`scrollable-auto-tab-${index}`}
       component="div"
-      role="tabpanel"
       hidden={value !== index}
       id={`scrollable-auto-tabpanel-${index}`}
-      aria-labelledby={`scrollable-auto-tab-${index}`}
+      role="tabpanel"
       {...other}
     >
       {value === index && <Box p={3}>{children}</Box>}
