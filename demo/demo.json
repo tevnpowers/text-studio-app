@@ -24,8 +24,8 @@
     "data": [
       {
         "id": "5eacbf07-d9b8-4d02-b674-8badb7703e2a",
-        "name": "Story Content",
-        "description": "This is a roster of students...",
+        "name": "Fanfiction Stories",
+        "description": "This is a set of 1M html tagged fanfiction stories written from 2012-2015.",
         "languages": ["English"],
         "path": "../data/story_content.csv",
         "config": {
