@@ -172,7 +172,6 @@ const ContentEditor = props => {
 
 
   if (value !== 0 && value > tabs.length - 1) {
-    console.log('updating to last tab!')
     setValue(tabs.length - 1);
   }
 

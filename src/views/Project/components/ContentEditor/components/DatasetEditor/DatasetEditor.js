@@ -31,7 +31,6 @@ const useStyles = makeStyles(() => ({
 const DatasetEditor = props => {
   const { className, datasetInfo, data, ...rest } = props;
   const classes = useStyles();
-  console.log('editor data: ', data)
 
   const getLanguageChips = languages => {
     let chips = []
@@ -49,8 +48,6 @@ const DatasetEditor = props => {
 
     return chips
   }
-
-  console.log('rendering dataset editor...')
 
   return (
     <div className={classes.container}>
