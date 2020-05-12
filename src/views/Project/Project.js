@@ -89,6 +89,10 @@ const Project = (props) => {
     }
   }
 
+  const runModule = (id, settings) => {
+    console.log('running module ', id, settings)
+  }
+
   const closeProjectItem = (id) => {
     let tabs = []
     for (var openId of openTabs) {
@@ -141,6 +145,7 @@ const Project = (props) => {
           <ContentEditor 
             datasets={datasets}
             elements={elements}
+            onRunModule={runModule}
             onTabClose={closeProjectItem}
             tabs={openTabs}
           />

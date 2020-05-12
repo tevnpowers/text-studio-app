@@ -46,17 +46,17 @@ function a11yProps(index) {
 }
 
 const ContentEditor = props => {
-  const { className, datasets, elements, tabs, onTabClose, ...rest } = props;
+  const { datasets, elements, tabs, onTabClose, onRunModule } = props;
   const classes = useStyles();
   const [value, setValue] = useState(0);
-  const [open, setOpen] = React.useState(false);
+  const [executionDialogId, setExecutionDialogId] = React.useState('');
 
-  const handleExecutionOpen = () => {
-    setOpen(true);
+  const handleExecutionOpen = (id) => {
+    setExecutionDialogId(id);
   };
 
   const handleExecutionClose = () => {
-    setOpen(false);
+    setExecutionDialogId('');
   };
 
   const handleChange = (event, newValue) => {
@@ -67,6 +67,11 @@ const ContentEditor = props => {
     onTabClose(id)
     event.stopPropagation();
   };
+
+  const handleRunModule = (id, settings) => {
+    onRunModule(id, settings);
+    setExecutionDialogId('');
+  }
 
   const getTab = (title, id) => {
     return (
@@ -190,11 +195,24 @@ const ContentEditor = props => {
     setValue(tabs.length - 1);
   }
 
+  let datasetInfo = []
+  for (var component of elements) {
+    if (component.type === 'data') {
+      datasetInfo.push({
+        id: component.id,
+        name: component.name
+      })
+    }
+  }
+
   return (
     <div className={classes.root}>
       <ExecutionDialog
+        datasets={datasetInfo}
+        id={executionDialogId}
         onClose={handleExecutionClose}
-        open={open}
+        onRun={handleRunModule}
+        open={executionDialogId !== ''}
         type="Annotator"
       />
       <AppBar
@@ -219,9 +237,9 @@ const ContentEditor = props => {
 };
 
 ContentEditor.propTypes = {
-  className: PropTypes.string,
   datasets: PropTypes.object.isRequired,
   elements: PropTypes.array.isRequired,
+  onRunModule: PropTypes.func.isRequired,
   onTabClose: PropTypes.func.isRequired,
   selectedIndex: PropTypes.number,
   tabs: PropTypes.array.isRequired,

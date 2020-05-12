@@ -44,7 +44,7 @@ function PaperComponent(props) {
 }
 
 const ExecutionDialog = props => {
-  const { onClose, open, type } = props;
+  const { datasets, id, onClose, onRun, open, type } = props;
 
   const classes = useStyles();
   const [input, setInput] = React.useState('');
@@ -58,6 +58,12 @@ const ExecutionDialog = props => {
     setOutput(event.target.value);
   };
 
+  const runModule = (event) => {
+    onRun(id, {
+      input: input,
+      output: output
+    })
+  }
 
   return (
     <Dialog
@@ -95,9 +101,12 @@ const ExecutionDialog = props => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={'Student Dataset'}>Student Dataset</MenuItem>
-              <MenuItem value={'Fanfiction Stories'}>Fanfiction Stories</MenuItem>
-              <MenuItem value={'Fanfiction Fandoms'}>Fanfiction Fandoms</MenuItem>
+              {datasets.map(data =>
+                <MenuItem
+                  key={data.id}
+                  value={data.id}
+                >{data.name}</MenuItem>
+              )}
             </Select>
             <FormHelperText>Select input data to process</FormHelperText>
           </FormControl>
@@ -116,11 +125,14 @@ const ExecutionDialog = props => {
               value={output}
             >
               <MenuItem value="">
-                <em>None                </em>
+                <em>None</em>
               </MenuItem>
-              <MenuItem value={'Student Dataset'}>Student Dataset</MenuItem>
-              <MenuItem value={'Fanfiction Stories'}>Fanfiction Stories</MenuItem>
-              <MenuItem value={'Fanfiction Fandoms'}>Fanfiction Fandoms</MenuItem>
+              {datasets.map(data =>
+                <MenuItem
+                  key={data.id}
+                  value={data.id}
+                >{data.name}</MenuItem>
+              )}
             </Select>
             <FormHelperText>Select location to save output.</FormHelperText>
           </FormControl>
@@ -135,7 +147,7 @@ const ExecutionDialog = props => {
         </Button>
         <Button
           color="primary"
-          onClick={onClose}
+          onClick={runModule}
         >
             Run
         </Button>
@@ -145,7 +157,10 @@ const ExecutionDialog = props => {
 }
 
 ExecutionDialog.propTypes = {
+  datasets: PropTypes.array.isRequired,
+  id: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
+  onRun: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   type: PropTypes.string.isRequired
 };

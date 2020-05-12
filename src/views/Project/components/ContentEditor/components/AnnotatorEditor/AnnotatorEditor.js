@@ -234,7 +234,7 @@ const AnnotatorEditor = props => {
               item
             >
               <IconButton
-                onClick={onRunAnnotator}
+                onClick={() => onRunAnnotator(data.id)}
               >
                 <PlayCircleFilledWhiteOutlinedIcon
                   color="primary"

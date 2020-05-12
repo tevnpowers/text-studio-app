@@ -60,7 +60,6 @@ const PipelineEditor = props => {
     initPanels[id] = false;
   }
   const [expandedPanels, setExpandedPanels] = useState(initPanels)
-  const [runEnabled, setRunEnabled] = useState(true)
   const [values, setValues] = useState({
 
   });
@@ -77,14 +76,6 @@ const PipelineEditor = props => {
       ...expandedPanels,
       [id]: expanded
     })
-  }
-
-  const runPipeline = () => {
-    setRunEnabled(false)
-  }
-
-  const pipelineRunComplete = () => {
-    setRunEnabled(true)
   }
 
   const getPanelSummary = (item) => {
@@ -227,11 +218,10 @@ const PipelineEditor = props => {
               item
             >
               <IconButton
-                disabled={!runEnabled}
-                onClick={onRunPipeline}
+                onClick={() => onRunPipeline(pipelineInfo.id)}
               >
                 <PlayCircleFilledWhiteOutlinedIcon
-                  color={runEnabled ? 'primary' : 'disabled'}
+                  color="primary"
                 />
               </IconButton>
             </Grid>
