@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/styles';
 import { IconButton, Grid, Typography } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { DatasetCard } from 'components';
+import { DatasetCard, NewItemCard } from 'components';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import StorageRoundedIcon from '@material-ui/icons/StorageRounded';
 import ExtensionOutlinedIcon from '@material-ui/icons/ExtensionOutlined';
