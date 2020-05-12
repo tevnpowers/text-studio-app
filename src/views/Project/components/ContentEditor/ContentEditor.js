@@ -7,8 +7,13 @@ import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import IconButton from '@material-ui/core/IconButton';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Paper from '@material-ui/core/Paper';
-import { AnnotatorEditor, DatasetEditor, PipelineEditor, TabPanel } from './components';
+import {
+  AnnotatorEditor,
+  DatasetEditor,
+  ExecutionDialog,
+  PipelineEditor,
+  TabPanel
+} from './components';
 
 
 const useStyles = makeStyles(theme => ({
@@ -44,6 +49,15 @@ const ContentEditor = props => {
   const { className, datasets, elements, tabs, onTabClose, ...rest } = props;
   const classes = useStyles();
   const [value, setValue] = useState(0);
+  const [open, setOpen] = React.useState(false);
+
+  const handleExecutionOpen = () => {
+    setOpen(true);
+  };
+
+  const handleExecutionClose = () => {
+    setOpen(false);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -100,6 +114,7 @@ const ContentEditor = props => {
       >
         <AnnotatorEditor
           data={obj}
+          onRunAnnotator={handleExecutionOpen}
           type={obj.type}
         />
       </TabPanel>)
@@ -113,8 +128,9 @@ const ContentEditor = props => {
         value={value}
       >
         <PipelineEditor
-          components={components}
-          data={obj}
+          onRunPipeline={handleExecutionOpen}
+          pipelineInfo={obj}
+          projectComponents={components}
         />
       </TabPanel>)
   }
@@ -170,13 +186,17 @@ const ContentEditor = props => {
     return getEmptyEditor();
   }
 
-
   if (value !== 0 && value > tabs.length - 1) {
     setValue(tabs.length - 1);
   }
 
   return (
     <div className={classes.root}>
+      <ExecutionDialog
+        onClose={handleExecutionClose}
+        open={open}
+        type="Annotator"
+      />
       <AppBar
         color="default"
         position="static"
@@ -203,6 +223,7 @@ ContentEditor.propTypes = {
   datasets: PropTypes.object.isRequired,
   elements: PropTypes.array.isRequired,
   onTabClose: PropTypes.func.isRequired,
+  selectedIndex: PropTypes.number,
   tabs: PropTypes.array.isRequired,
 };
 

@@ -33,6 +33,7 @@
     "@material-ui/lab": "^4.0.0-alpha.49",
     "@material-ui/styles": "^4.2.1",
     "chart.js": "^2.8.0",
+    "react-draggable": "^4.3.1",
     "react-scripts": "^3.0.1",
     "typeface-roboto": "0.0.75",
     "zerorpc": "^0.9.8"

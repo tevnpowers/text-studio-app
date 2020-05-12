@@ -1,5 +1,5 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
@@ -52,10 +52,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const PipelineEditor = props => {
-  const { data, components, ...rest } = props;
-
+  const { onRunPipeline, pipelineInfo, projectComponents, ...rest } = props;
   const classes = useStyles();
 
+  let initPanels = {}
+  for (var id of pipelineInfo.components) {
+    initPanels[id] = false;
+  }
+  const [expandedPanels, setExpandedPanels] = useState(initPanels)
+  const [runEnabled, setRunEnabled] = useState(true)
   const [values, setValues] = useState({
 
   });
@@ -66,6 +71,40 @@ const PipelineEditor = props => {
       [event.target.name]: event.target.value
     });
   };
+
+  const panelChange = (event, expanded, id) => {
+    setExpandedPanels({
+      ...expandedPanels,
+      [id]: expanded
+    })
+  }
+
+  const runPipeline = () => {
+    setRunEnabled(false)
+  }
+
+  const pipelineRunComplete = () => {
+    setRunEnabled(true)
+  }
+
+  const getPanelSummary = (item) => {
+    let typography = []
+    typography.push(
+      <Typography
+        className={classes.heading}
+        key="name"
+      >
+        {item.name}
+      </Typography>)
+    typography.push(
+      <Typography
+        className={classes.secondaryHeading}
+        key="description"
+      >
+        {expandedPanels[item.id] ? '' : item.description.slice(0, 115) + '....'}
+      </Typography>)
+    return typography
+  }
 
   const getPipelineComponents = (pipelineComponents, projectComponents) => {
     let inputs = []
@@ -83,20 +122,20 @@ const PipelineEditor = props => {
       </div>
     )
 
-    for (var id of pipelineComponents) {
-      for (var item of projectComponents) {
+    for (let id of pipelineComponents) {
+      for (let item of projectComponents) {
         if (id === item.id) {
           inputs.push(
             <ExpansionPanel
               key={item.id}
+              onChange={(event, expanded) => panelChange(event, expanded, id)}
             >
               <ExpansionPanelSummary
                 aria-controls="panel1a-content"
                 expandIcon={<ExpandMoreIcon />}
                 id="panel1a-header"
               >
-                <Typography className={classes.heading}>{item.name}</Typography>
-                <Typography className={classes.secondaryHeading}>{item.description.slice(0, 115) + '....'}</Typography>
+                {getPanelSummary(item)}
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <Typography>
@@ -110,6 +149,7 @@ const PipelineEditor = props => {
     }
     return inputs
   }
+
 
   return (
     <Card
@@ -126,7 +166,7 @@ const PipelineEditor = props => {
               <EditOutlinedIcon />
             </IconButton>
           }
-          subheader={data.id}
+          subheader={pipelineInfo.id}
           title={'Pipeline'}
         />
         <Divider />
@@ -140,7 +180,7 @@ const PipelineEditor = props => {
                 gutterBottom
                 variant="body2"
               >
-                {data.description}
+                {pipelineInfo.description}
               </Typography>
             </div>
             <div
@@ -155,11 +195,11 @@ const PipelineEditor = props => {
                 name="annotatorName"
                 onChange={handleChange}
                 required
-                value={data.name}
+                value={pipelineInfo.name}
                 variant="outlined"
               />
             </div>
-            {getPipelineComponents(data.components, components)}
+            {getPipelineComponents(pipelineInfo.components, projectComponents)}
           </div>
         </CardContent>
         <Divider />
@@ -186,8 +226,13 @@ const PipelineEditor = props => {
               className={classes.actionItem}
               item
             >
-              <IconButton>
-                <PlayCircleFilledWhiteOutlinedIcon color="primary"/>
+              <IconButton
+                disabled={!runEnabled}
+                onClick={onRunPipeline}
+              >
+                <PlayCircleFilledWhiteOutlinedIcon
+                  color={runEnabled ? 'primary' : 'disabled'}
+                />
               </IconButton>
             </Grid>
           </Grid>
@@ -198,8 +243,9 @@ const PipelineEditor = props => {
 };
 
 PipelineEditor.propTypes = {
-  components: PropTypes.array.isRequired,
-  data: PropTypes.object.isRequired,
+  onRunPipeline: PropTypes.func.isRequired,
+  pipelineInfo: PropTypes.object.isRequired,
+  projectComponents: PropTypes.array.isRequired
 };
 
 export default PipelineEditor;

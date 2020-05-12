@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import PlayCircleFilledWhiteOutlinedIcon from '@material-ui/icons/PlayCircleFilledWhiteOutlined';
 import {
   Card,
   CardHeader,
@@ -16,7 +16,7 @@ import {
   TextField
 } from '@material-ui/core';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
     minWidth: 750
@@ -27,11 +27,18 @@ const useStyles = makeStyles(() => ({
   },
   child: {
     //paddingBottom: '10px',
+  },
+  actionItem: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  actionContainer: {
+    paddingLeft: theme.spacing(1)
   }
 }));
 
 const AnnotatorEditor = props => {
-  const { data, type, ...rest } = props;
+  const { data, onRunAnnotator, type, ...rest } = props;
 
   const classes = useStyles();
 
@@ -204,12 +211,37 @@ const AnnotatorEditor = props => {
         </CardContent>
         <Divider />
         <CardActions>
-          <Button
-            color="primary"
-            variant="contained"
+          <Grid
+            alignItems="center"
+            className={classes.actionContainer}
+            container
+            justify="flex-start"
+            spacing={5}
           >
-            Save
-          </Button>
+            <Grid
+              className={classes.actionItem}
+              item
+            >
+              <Button
+                color="primary"
+                variant="contained"
+              >
+          Save
+              </Button>
+            </Grid>
+            <Grid
+              className={classes.actionItem}
+              item
+            >
+              <IconButton
+                onClick={onRunAnnotator}
+              >
+                <PlayCircleFilledWhiteOutlinedIcon
+                  color="primary"
+                />
+              </IconButton>
+            </Grid>
+          </Grid>
         </CardActions>
       </form>
     </Card>
@@ -218,6 +250,7 @@ const AnnotatorEditor = props => {
 
 AnnotatorEditor.propTypes = {
   data: PropTypes.object.isRequired,
+  onRunAnnotator: PropTypes.func.isRequired,
   type: PropTypes.string.isRequired
 };
 
