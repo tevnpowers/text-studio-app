@@ -11,7 +11,7 @@ const { setMainMenu } = require('./utils/menu.js')
 const {
   tokenizeText,
   loadDataset,
-  loadDatasetMock
+  execute_module
 } = require('./renderer.js')
 
 const {
@@ -20,7 +20,9 @@ const {
   LOAD_DATA,
   ACCEPT_DATA,
   GET_DATASET,
-  RETURN_DATASET
+  RETURN_DATASET,
+  EXECUTE_MODULE,
+  EXECUTION_STATUS
 } = require('./utils/constants.js')
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -91,6 +93,9 @@ const createPyProc = () => {
   pyProc = require('child_process').spawn('python', [script, port])
   if (pyProc != null) {
     console.log('child process success')
+    pyProc.stdout.on('data', function(data) {
+      console.log('Python Stdout: ', data.toString('utf8'));
+    });
   }
 }
 
@@ -132,7 +137,7 @@ app.on('activate', () => {
 
 // IPC Handlers
 ipcMain.on(SUBMIT_TEXT, (event, arg) => {
-  console.log("here 001 ", arg)
+  console.log('here 001 ', arg)
   tokenizeText(arg).then(response => {
     event.sender.send(TOKENIZE_TEXT, response)
   }
@@ -140,15 +145,22 @@ ipcMain.on(SUBMIT_TEXT, (event, arg) => {
 })
 
 ipcMain.on(LOAD_DATA, (event, arg) => {
-  console.log("here 001 ", arg)
+  console.log('here 001 ', arg)
   loadDataset(arg).then(response => {
     event.sender.send(ACCEPT_DATA, response)
   });
 })
 
 ipcMain.on(GET_DATASET, (event, arg) => {
-  console.log("dataset 001 ", arg)
+  console.log('dataset 001 ', arg)
   loadDataset(arg).then(response => {
     event.sender.send(RETURN_DATASET, response)
+  });
+})
+
+ipcMain.on(EXECUTE_MODULE, (event, arg) => {
+  console.log('execute-module ', arg)
+  execute_module(arg).then(response => {
+    event.sender.send(EXECUTION_STATUS, response)
   });
 })

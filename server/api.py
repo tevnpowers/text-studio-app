@@ -1,6 +1,6 @@
 from uuid import UUID
 from project import Project
-
+import sys
 
 class TextStudioAPI(object):
     def __init__(self):
@@ -10,9 +10,11 @@ class TextStudioAPI(object):
         print('API loading project {}!'.format(path))
         project = Project(filepath=path)
         self.projects.append(project)
+        sys.stdout.flush()
         return project.toJson()
 
     def load_dataset(self, id_string):
+        # Load a dataset from a project
         id = UUID(id_string)
         instances = []
         project = self.projects[0]
@@ -20,6 +22,7 @@ class TextStudioAPI(object):
         return {'id': id_string, 'data': instances}
 
     def load_dataset_from_file(self, path):
+        # Load a dataset from a file
         pass
 
     def load_dataset_mock(self, id_string):
@@ -31,6 +34,12 @@ class TextStudioAPI(object):
             {"id": 4, "name": "Mike", "age": 19, "graduated": False},
         ]
         return {'id': id_string, 'data': instances}
+
+    def execute_module(self, settings):
+        for project in self.projects:
+            if project.id == settings['projectId']:
+                return {"status": "Found project!"}
+        return {"status": "Did not find project!"}
 
     def tokenize(self, text):
         """split text on white space"""

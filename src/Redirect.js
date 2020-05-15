@@ -6,8 +6,7 @@ const { OPEN_PROJECT, RETURN_DATASET } = require('../utils/constants');
 const setIpcFuncs = (onProjectReceive) => {
   ipcRenderer.on(OPEN_PROJECT, (event, arg) => {
     let info = JSON.parse(arg)
-    console.log('Received new project!', info)
-    onProjectReceive('543534', info)
+    onProjectReceive(info.metadata.id, info)
   })
 }
 

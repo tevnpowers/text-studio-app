@@ -1,12 +1,12 @@
 // renderer.js
-const zerorpc = require("zerorpc")
+const zerorpc = require('zerorpc')
 let client = new zerorpc.Client()
-client.connect("tcp://127.0.0.1:4242")
+client.connect('tcp://127.0.0.1:4242')
 
 async function tokenizeText(text) {
   let promise = new Promise((resolve, reject) => {
     let tokens = []
-    client.invoke("tokenize", text, (error, res) => {
+    client.invoke('tokenize', text, (error, res) => {
       if (error) {
         console.error(error)
       }
@@ -22,7 +22,7 @@ async function tokenizeText(text) {
 async function openProject(path) {
   let promise = new Promise((resolve, reject) => {
     let project = {}
-    client.invoke("open_project", path, (error, res) => {
+    client.invoke('open_project', path, (error, res) => {
       if (error) {
         console.error(error)
       } else {
@@ -35,10 +35,10 @@ async function openProject(path) {
 }
 
 async function loadDataset(id) {
-  console.log("Loading dataset", id)
+  console.log('Loading dataset', id)
   let promise = new Promise((resolve, reject) => {
     let dataset = {}
-    client.invoke("load_dataset", id, (error, res) => {
+    client.invoke('load_dataset', id, (error, res) => {
       if (error) {
         console.error(error)
       } else {
@@ -51,10 +51,10 @@ async function loadDataset(id) {
 }
 
 async function loadDatasetFromFile(id) {
-  console.log("Loading dataset", id)
+  console.log('Loading dataset', id)
   let promise = new Promise((resolve, reject) => {
     let dataset = {}
-    client.invoke("load_dataset_from_file", id, (error, res) => {
+    client.invoke('load_dataset_from_file', id, (error, res) => {
       if (error) {
         console.error(error)
       } else {
@@ -67,10 +67,10 @@ async function loadDatasetFromFile(id) {
 }
 
 async function loadDatasetMock(id) {
-  console.log("Loading dataset", id)
+  console.log('Loading dataset', id)
   let promise = new Promise((resolve, reject) => {
     let data = {'id': id}
-    client.invoke("load_dataset_mock", id, (error, res) => {
+    client.invoke('load_dataset_mock', id, (error, res) => {
       if (error) {
         console.error(error)
       } else {
@@ -82,9 +82,28 @@ async function loadDatasetMock(id) {
   return await promise;
 }
 
+async function execute_module(settings) {
+  console.log('Executing module...', settings)
+  let promise = new Promise((resolve, reject) => {
+    let response = {'status': 'no connection'}
+    client.invoke('execute_module', settings, (error, res) => {
+      if (error) {
+        response.status = error
+      } else {
+        response.status = res;
+      }
+      console.log('resolving response ', response)
+      resolve(response);
+    })
+  });
+  return await promise;
+}
+
+// eslint-disable-next-line no-undef
 module.exports = {
   openProject,
   tokenizeText,
   loadDataset,
-  loadDatasetMock
+  loadDatasetMock,
+  execute_module
 }

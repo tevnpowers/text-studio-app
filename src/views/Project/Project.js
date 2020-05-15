@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { removeListeners, setIpcFuncs } from '../../Redirect'
 const { ipcRenderer } = require('electron');
-const { GET_DATASET, RETURN_DATASET } = require('../../../utils/constants')
+const {
+  EXECUTE_MODULE,
+  EXECUTION_STATUS,
+  GET_DATASET,
+  RETURN_DATASET,
+} = require('../../../utils/constants')
 
 import {
   ContentEditor,
@@ -58,14 +63,20 @@ const Project = (props) => {
   useEffect(() => {
     setIpcFuncs(onProjectReceive);
     ipcRenderer.once(RETURN_DATASET, (event, arg) => {
+      console.log('received dataset info!')
       setDatasets({
         ...datasets,
         [arg.id]: arg.data
       })
     });
 
+    ipcRenderer.once(EXECUTION_STATUS, (event, arg) => {
+      console.log('Received execution status: ', arg)
+    });
+
     // Specify how to clean up after this effect:
     return function cleanup() {
+      ipcRenderer.removeAllListeners(EXECUTION_STATUS);
       removeListeners();
     };
   });
@@ -90,7 +101,13 @@ const Project = (props) => {
   }
 
   const runModule = (id, settings) => {
-    console.log('running module ', id, settings)
+    console.log('Project executing module ', settings)
+    ipcRenderer.send(EXECUTE_MODULE, {
+      projectId: projectInfo.metadata.id,
+      moduleId: id,
+      input: settings.input,
+      output: settings.output
+    });
   }
 
   const closeProjectItem = (id) => {

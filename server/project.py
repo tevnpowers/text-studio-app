@@ -30,11 +30,12 @@ class UUIDEncoder(json.JSONEncoder):
 class Project(object):
     def __init__(self, *, author="", filepath=""):
         self.filepath = filepath.strip()
-        self.project_info = {
+        self.info = {
             "metadata": {
                 "author": author.strip(),
-                "created_time": get_current_time(),
-                "saved_time": "",
+                "created": get_current_time(),
+                "saved": "",
+                "id": ""
             },
             "data": [],
             "loaders": [],
@@ -63,7 +64,7 @@ class Project(object):
 
     def toJson(self):
         json_project = {"path": self.filepath}
-        json_project.update(self.project_info)
+        json_project.update(self.info)
         return json.dumps(json_project, cls=UUIDEncoder)
 
     def get_project_component_descriptions(self, heading, collection):
@@ -74,9 +75,9 @@ class Project(object):
 
     def __repr__(self):
         description = "Author: {}\nCreated: {}\nSaved: {}\n".format(
-            self.project_info["metadata"]["author"],
-            self.project_info["metadata"]["created"],
-            self.project_info["metadata"]["saved"],
+            self.info["metadata"]["author"],
+            self.info["metadata"]["created"],
+            self.info["metadata"]["saved"],
         )
 
         if self.data_loaders:
@@ -112,8 +113,12 @@ class Project(object):
             return os.path.dirname(self.filepath)
         return ""
 
+    @property
+    def id(self):
+        return self.info["metadata"]["id"]
+
     def save(self, filepath):
-        self.project_info["saved"] = get_current_time()
+        self.info["saved"] = get_current_time()
 
     def parse_config(self, config):
         if "loaders" in config:
@@ -136,7 +141,7 @@ class Project(object):
             for info in config["pipelines"]:
                 self.add_pipeline(info)
 
-        self.project_info = config.copy()
+        self.info = config.copy()
 
     def add_data_loader(self, info):
         if info["name"] == "CsvLoader":

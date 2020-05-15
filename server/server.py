@@ -4,7 +4,6 @@ import signal
 import zerorpc
 
 from api import TextStudioAPI
-print('HELLO WORLD!')
 
 if __name__ == '__main__':
     port = 4242
