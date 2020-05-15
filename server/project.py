@@ -222,11 +222,21 @@ class Project(object):
             dataset.load()
 
     def load_dataset(self, dataset_id):
-        if not self.datasets[dataset_id].loaded:
-            self.datasets[dataset_id].load()
+        self.datasets[dataset_id].load()
         return self.datasets[dataset_id].instances
 
-    def run(self, id, input_data_id, output_data_path, verbose=False):
+    def run(self,
+            id,
+            input_data_id,
+            output_data_id=None,
+            output_data_path='',
+            verbose=False):
+        if output_data_id:
+            if output_data_id in self.datasets:
+                output_data_path = self.datasets[output_data_id].file_path
+            else:
+                return {'status': 'Failed to find the output dataset: {}'.format(output_data_id)}
+
         instances = self.datasets[input_data_id].instances
         if id in self.annotators:
             instances = self._run_annotator(id, instances, verbose)
@@ -237,9 +247,7 @@ class Project(object):
                 id, instances, output_data_path, verbose
             )
         else:
-            raise KeyError(
-                "The provided ID does not exist in project annotators, actions, or pipelines."
-            )
+            return {'status': 'Key Error: The provided ID does not exist in project annotators, actions, or pipelines.'}
 
         if output_data_path and id not in self.actions:
             absolute_path = self._get_absolute_path(output_data_path)
@@ -256,6 +264,8 @@ class Project(object):
             dataset.instances = instances
             self.datasets[dataset.id] = dataset
             self.datasets[dataset.id].save()
+        return {'status': 'Successfully executed {}...'.format(id)}
+
 
     def _run_annotator(self, id, data, verbose=False):
         annotator = self.annotators[id]

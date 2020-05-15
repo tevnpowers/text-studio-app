@@ -32,8 +32,8 @@ class HtmlParser(Annotator):
     def process_single(self, document):
         self.clear()
         self.parser.feed(self.get_document_html(document))
-        document["text"] = self.parser.content
+        document[self.annotations[0]["value"]] = self.parser.content
         return document
 
     def get_document_html(self, document):
-        return document[self.keys[0]] if self.keys else document
+        return document[self.keys[0]["value"]] if self.keys else document

@@ -36,10 +36,15 @@ class TextStudioAPI(object):
         return {'id': id_string, 'data': instances}
 
     def execute_module(self, settings):
+        response = {"status": "Failed to execute."}
         for project in self.projects:
             if project.id == settings['projectId']:
-                return {"status": "Found project!"}
-        return {"status": "Did not find project!"}
+                response = project.run(UUID(settings['moduleId']),
+                                       UUID(settings['input']),
+                                       UUID(settings['output']))
+                break
+        sys.stdout.flush()
+        return response
 
     def tokenize(self, text):
         """split text on white space"""

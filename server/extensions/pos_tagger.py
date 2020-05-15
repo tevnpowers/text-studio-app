@@ -12,7 +12,7 @@ class PosTagger(Annotator):
         self.sent_detector = data.load("tokenizers/punkt/english.pickle")
 
     def process_single(self, document):
-        text = document[self.keys[0]][:200]
+        text = document[self.keys[0]["value"]][:200]
         sentences = self.sent_detector.tokenize(text.strip())
         tagged_tokens = []
         raw_tokens = []
@@ -29,6 +29,6 @@ class PosTagger(Annotator):
                 tagged_tokens += tokens
                 raw_tokens += [x for (x, y) in tokens]
 
-        document[self.annotations[0]] = tagged_tokens
-        document[self.annotations[1]] = " ".join(raw_tokens)
+        document[self.annotations[0]["value"]] = tagged_tokens
+        document[self.annotations[1]["value"]] = " ".join(raw_tokens)
         return document

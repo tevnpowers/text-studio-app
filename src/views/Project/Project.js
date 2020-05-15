@@ -70,7 +70,7 @@ const Project = (props) => {
       })
     });
 
-    ipcRenderer.once(EXECUTION_STATUS, (event, arg) => {
+    ipcRenderer.on(EXECUTION_STATUS, (event, arg) => {
       console.log('Received execution status: ', arg)
     });
 

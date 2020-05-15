@@ -6,8 +6,8 @@ from text_studio.action import Action
 class WordCloudGenerator(Action):
     def process_single(self, doc, out_path):
         """Process a single text document."""
-        id_key = self.keys[0]
-        text_key = self.keys[1]
+        id_key = self.keys[0]["value"]
+        text_key = self.keys[1]["value"]
 
         text = doc[text_key]
         wordcloud = WordCloud().generate(text)
