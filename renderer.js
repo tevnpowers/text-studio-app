@@ -1,6 +1,6 @@
 // renderer.js
 const zerorpc = require('zerorpc')
-let client = new zerorpc.Client()
+let client = new zerorpc.Client({heartbeatInterval: 100000})
 client.connect('tcp://127.0.0.1:4242')
 
 async function tokenizeText(text) {
@@ -82,18 +82,25 @@ async function loadDatasetMock(id) {
   return await promise;
 }
 
-async function execute_module(settings) {
-  console.log('Executing module...', settings)
+async function execute_module(settings, updateFunc) {
+  console.log('Executing module...')
   let promise = new Promise((resolve, reject) => {
     let response = {'status': 'no connection'}
+    let responses = []
     client.invoke('execute_module', settings, (error, res) => {
       if (error) {
         response.status = error
       } else {
-        response.status = res;
+        response = res;
       }
-      console.log('resolving response ', response)
-      resolve(response);
+
+      if (response) {
+        responses.push(response)
+        updateFunc(response)
+        if (response.complete) {
+          resolve(response);
+        }
+      }
     })
   });
   return await promise;

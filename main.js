@@ -160,7 +160,10 @@ ipcMain.on(GET_DATASET, (event, arg) => {
 
 ipcMain.on(EXECUTE_MODULE, (event, arg) => {
   console.log('execute-module ', arg)
-  execute_module(arg).then(response => {
+  const partialUpdate = (msg) => {
+    event.sender.send(EXECUTION_STATUS, msg)
+  }
+  execute_module(arg, partialUpdate).then(response => {
     event.sender.send(EXECUTION_STATUS, response)
   });
 })
