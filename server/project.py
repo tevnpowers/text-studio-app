@@ -10,6 +10,8 @@ from extensions.csv_loader import CsvLoader
 from text_studio.dataset import Dataset
 from text_studio.pipeline import Pipeline
 
+import time
+
 ID_KEYS = [
     "data",
     "loaders",
@@ -61,6 +63,12 @@ class Project(object):
                 )
 
         self.load_datasets()
+
+    def __eq__(self, other):
+        return self.info["metadata"]["id"] == other.info["metadata"]["id"]
+
+    def __ne__(self, other):
+        return self.info["metadata"]["id"] != other.info["metadata"]["id"]
 
     def toJson(self):
         json_project = {"path": self.filepath}
@@ -235,7 +243,12 @@ class Project(object):
             if output_data_id in self.datasets:
                 output_data_path = self.datasets[output_data_id].file_path
             else:
-                return {'status': 'Failed to find the output dataset: {}'.format(output_data_id)}
+                yield {
+                    'complete': True,
+                    'id': str(id),
+                    'msg': 'Failed to find the output dataset: {}'.format(output_data_id),
+                    'status': 0
+                }
 
         instances = self.datasets[input_data_id].instances
         if id in self.annotators:
@@ -243,11 +256,18 @@ class Project(object):
         elif id in self.actions:
             self._run_action(id, instances, output_data_path, verbose)
         elif id in self.pipelines:
-            instances = self._run_pipeline(
-                id, instances, output_data_path, verbose
-            )
+            for response in self._run_pipeline(id, instances, output_data_path, verbose):
+                if response['complete']:
+                    instances = response['data']
+                else:
+                    yield response
         else:
-            return {'status': 'Key Error: The provided ID does not exist in project annotators, actions, or pipelines.'}
+            return {
+                'complete': True,
+                'id': str(id),
+                'msg': 'Key Error: The provided ID does not exist in project annotators, actions, or pipelines.',
+                'status': 0
+            }
 
         if output_data_path and id not in self.actions:
             absolute_path = self._get_absolute_path(output_data_path)
@@ -264,8 +284,13 @@ class Project(object):
             dataset.instances = instances
             self.datasets[dataset.id] = dataset
             self.datasets[dataset.id].save()
-        return {'status': 'Successfully executed {}...'.format(id)}
-
+        yield {
+            'complete': True,
+            'id': str(id),
+            'msg': 'Completed {}...'.format(id),
+            'status': 2
+        }
+        return
 
     def _run_annotator(self, id, data, verbose=False):
         annotator = self.annotators[id]
@@ -287,6 +312,23 @@ class Project(object):
         return self.pipelines[id].execute(
             data, self._get_absolute_path(output_path), verbose
         )
+        '''
+        for _id, component in self.pipelines[id].components.items():
+            time.sleep(5)
+            yield {
+                    'msg': 'Executing {}...'.format(component.name),
+                    'id': str(_id),
+                    'complete': False,
+                    'data': []
+                  }
+        yield {
+            'msg': 'Completed pipeline {}...'.format(self.pipelines[id].name),
+            'id': None,
+            'complete': True,
+            'data': []
+        }
+        return
+        '''
 
     def _get_absolute_path(self, path):
         return os.path.join(self.directory, path)
