@@ -20,6 +20,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
 import PlayCircleFilledWhiteOutlinedIcon from '@material-ui/icons/PlayCircleFilledWhiteOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import StatusStepper from '../StatusStepper'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -52,7 +53,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const PipelineEditor = props => {
-  const { onRunPipeline, pipelineInfo, projectComponents, ...rest } = props;
+  const { executionInfo, onRunPipeline, pipelineInfo, projectComponents, ...rest } = props;
   const classes = useStyles();
 
   let initPanels = {}
@@ -141,6 +142,56 @@ const PipelineEditor = props => {
     return inputs
   }
 
+  const getExecutionComponents = (pipelineComponents) => {
+    let components = []
+    if (Object.keys(executionInfo).length !== 0) {
+      components.push(
+        <div
+          className={classes.child}
+          key={'executionHeader' + id}
+        >
+          <Typography
+            gutterBottom
+            variant="h4"
+          >
+            Status
+          </Typography>
+        </div>
+      )
+
+      let steps = []
+      let complete = true;
+      for (var id in executionInfo) {
+        for (var i in pipelineComponents) {
+          for (var j in projectComponents) {
+            if (pipelineComponents[i] == projectComponents[j].id) {
+              if (executionInfo[id][pipelineComponents[i]] < 2) {
+                complete = false;
+              }
+              steps.push({
+                description: projectComponents[j].description,
+                id: projectComponents[j].id,
+                name: projectComponents[j].name,
+                status: executionInfo[id][pipelineComponents[i]]
+              })
+            }
+          }
+        }
+
+        components.push(
+          <StatusStepper
+            complete={complete}
+            key={'statusStepper' + id}
+            pipeline={steps}
+          />
+        )
+      }
+    }
+
+    return components
+  }
+
+  // console.log('Pipeline Execution Info: ', executionInfo)
 
   return (
     <Card
@@ -190,6 +241,7 @@ const PipelineEditor = props => {
                 variant="outlined"
               />
             </div>
+            {getExecutionComponents(pipelineInfo.components)}
             {getPipelineComponents(pipelineInfo.components, projectComponents)}
           </div>
         </CardContent>
@@ -233,6 +285,7 @@ const PipelineEditor = props => {
 };
 
 PipelineEditor.propTypes = {
+  executionInfo: PropTypes.object,
   onRunPipeline: PropTypes.func.isRequired,
   pipelineInfo: PropTypes.object.isRequired,
   projectComponents: PropTypes.array.isRequired

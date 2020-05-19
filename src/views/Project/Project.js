@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { removeListeners, setIpcFuncs } from '../../Redirect'
+import { v4 as uuidv4 } from 'uuid';
 const { ipcRenderer } = require('electron');
 const {
   EXECUTE_MODULE,
@@ -44,7 +45,6 @@ const projectItemsToSkip = [
 
 const Project = (props) => {
   const classes = useStyles();
-
   let initialProjectInfo = null;
   if (props.location.state && props.location.state.projectInfo) {
     initialProjectInfo = props.location.state.projectInfo;
@@ -53,6 +53,7 @@ const Project = (props) => {
   const [projectInfo, setProjectInfo] = useState(initialProjectInfo);
   const [openTabs, setOpenTabs] = useState([]);
   const [datasets, setDatasets] = useState({});
+  const [executionStatus, setExecutionStatus] = useState({});
 
   useEffect(() => {
     if (props.location.state) {
@@ -71,7 +72,13 @@ const Project = (props) => {
     });
 
     ipcRenderer.on(EXECUTION_STATUS, (event, arg) => {
-      console.log('Received execution status: ', arg)
+      // console.log('Received execution status: ', arg)
+      setExecutionStatus({
+        ...executionStatus,
+        [arg.moduleId]: {
+          [arg.id]: arg.status
+        }
+      })
     });
 
     // Specify how to clean up after this effect:
@@ -101,12 +108,38 @@ const Project = (props) => {
   }
 
   const runModule = (id, settings) => {
-    console.log('Project executing module ', settings)
+    let executionInfo = { }
+    if (projectInfo.actions.some((action) => id === action.id)) {
+      executionInfo[id] = -1
+    } else if (projectInfo.annotators.some((annotator) => id === annotator.id)) {
+      executionInfo[id] = -1
+    } else {
+      for (var i in projectInfo.pipelines) {
+        var pipeline = projectInfo.pipelines[i];
+        if (pipeline.id === id) {
+          for (var j in pipeline.components) {
+            executionInfo[pipeline.components[j]] = -1
+          }
+        }
+      }
+    }
+
+    let executionId = uuidv4();
+    setExecutionStatus({
+      ...executionStatus,
+      [id]: {
+        ...executionStatus[id],
+        [executionId] : executionInfo
+      }
+    })
+
     ipcRenderer.send(EXECUTE_MODULE, {
-      projectId: projectInfo.metadata.id,
-      moduleId: id,
+      id: executionId,
       input: settings.input,
-      output: settings.output
+      moduleId: id,
+      output: settings.output,
+      projectId: projectInfo.metadata.id,
+      status: executionInfo
     });
   }
 
@@ -146,7 +179,6 @@ const Project = (props) => {
   }
 
   let elements = getProjectElements(projectInfo);
-
   return (
     <div
       className={classes.root}
@@ -162,6 +194,7 @@ const Project = (props) => {
           <ContentEditor 
             datasets={datasets}
             elements={elements}
+            executionStatus={executionStatus}
             onRunModule={runModule}
             onTabClose={closeProjectItem}
             tabs={openTabs}

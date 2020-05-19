@@ -46,7 +46,7 @@ function a11yProps(index) {
 }
 
 const ContentEditor = props => {
-  const { datasets, elements, tabs, onTabClose, onRunModule } = props;
+  const { datasets, elements, executionStatus, tabs, onTabClose, onRunModule } = props;
   const classes = useStyles();
   const [value, setValue] = useState(0);
   const [executionDialogId, setExecutionDialogId] = React.useState('');
@@ -110,7 +110,7 @@ const ContentEditor = props => {
     return tabs;
   }
 
-  const getAnnotationEditor = (idx, obj) => {
+  const getAnnotationEditor = (idx, obj, executionInfo) => {
     return (
       <TabPanel
         index={idx}
@@ -119,13 +119,14 @@ const ContentEditor = props => {
       >
         <AnnotatorEditor
           data={obj}
+          executionInfo={executionInfo}
           onRunAnnotator={handleExecutionOpen}
           type={obj.type}
         />
       </TabPanel>)
   }
 
-  const getPipelineEditor = (idx, obj, components) => {
+  const getPipelineEditor = (idx, obj, components, executionInfo) => {
     return (
       <TabPanel
         index={idx}
@@ -133,6 +134,7 @@ const ContentEditor = props => {
         value={value}
       >
         <PipelineEditor
+          executionInfo={executionInfo}
           onRunPipeline={handleExecutionOpen}
           pipelineInfo={obj}
           projectComponents={components}
@@ -159,14 +161,18 @@ const ContentEditor = props => {
     for (var i = 0; i < ids.length; i++) {
       for (var component of components) {
         if (component.id === ids[i]) {
+          let executionInfo = {}
+          if (component.id in executionStatus) {
+            executionInfo = executionStatus[component.id]
+          }
           if (component.type === 'annotators' ||
               component.type === 'loaders' ||
               component.type === 'actions') {
-            editors.push(getAnnotationEditor(i, component))
+            editors.push(getAnnotationEditor(i, component, executionInfo))
           } else if (component.type === 'data') {
             editors.push(getDatasetEditor(i, component))
           } else if (component.type === 'pipelines') {
-            editors.push(getPipelineEditor(i, component, components))
+            editors.push(getPipelineEditor(i, component, components, executionInfo))
           }
         }
       }
@@ -239,6 +245,7 @@ const ContentEditor = props => {
 ContentEditor.propTypes = {
   datasets: PropTypes.object.isRequired,
   elements: PropTypes.array.isRequired,
+  executionStatus: PropTypes.object,
   onRunModule: PropTypes.func.isRequired,
   onTabClose: PropTypes.func.isRequired,
   selectedIndex: PropTypes.number,
